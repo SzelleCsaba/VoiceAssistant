@@ -1,0 +1,114 @@
+General Commands:
+
+"What's the weather today?"
+"Set an alarm for 7 AM."
+"Remind me to buy groceries at 5 PM."
+"Call [contact name]."
+"Send a text to [contact name]."
+"Open [app name]."
+"What's on my calendar today?"
+"Tell me a joke."
+"Set a timer for 10 minutes."
+"Take a selfie."
+"Find my phone."
+"Translate 'hello' to French."
+"What's the time in Tokyo?"
+"Search for nearby restaurants."
+"What's the definition of 'serendipity'?"
+"Flip a coin."
+"Roll a die."
+"What's the latest news?"
+"Play some music."
+"What's the stock price of [company]?"
+"Turn on/off Bluetooth."
+"Navigate to [location]."
+"Find my nearest gas station."
+"What's the exchange rate for USD to EUR?"
+"Open the camera."
+Phone Control:
+26. "Turn on/off Wi-Fi."
+
+"Increase/decrease screen brightness."
+"Enable/Disable Do Not Disturb."
+"Take a screenshot."
+"Set my phone to silent."
+"Turn on/off airplane mode."
+"How much battery do I have left?"
+"Read my notifications."
+"Open my email."
+"Set a reminder for tomorrow."
+"Check my voicemail."
+Entertainment:
+37. "Play [song name] by [artist]."
+
+"Play some relaxing music."
+"What movies are playing nearby?"
+"Who won the last Super Bowl?"
+"Tell me a fun fact."
+"What's your favorite movie?"
+Home Control (if supported):
+43. "Turn on the lights."
+
+"Set the thermostat to 72 degrees."
+"Lock the front door."
+"Change TV channel to [channel]."
+"Dim the lights to 50%."
+Personal Assistance:
+48. "What's my daily briefing?"
+
+"Find a recipe for lasagna."
+"How do I tie a tie?"
+"What's the best route to work?"
+"Add milk to my shopping list."
+"What's the score of the [sports team] game?"
+"Define 'onomatopoeia.'"
+"Send flowers to [recipient]."
+"Order a pizza for delivery."
+"Book a table at [restaurant]."
+"Read me a bedtime story."
+"What's my horoscope for today?"
+"Recommend a book to read."
+Social Media:
+61. "Post a status on Facebook."
+
+"Tweet [message]."
+"Show me my Instagram feed."
+"Send a Snapchat to [friend]."
+Travel and Navigation:
+65. "Find me a hotel in [city]."
+
+"What's the traffic like?"
+"Check the flight status of [flight number]."
+"What's the nearest bus stop?"
+"Show me tourist attractions in [city]."
+Health and Fitness:
+70. "How many calories in a banana?"
+
+"Start a workout timer."
+"Track my steps for today."
+"What's my heart rate?"
+Education:
+74. "Teach me a new language."
+
+"Tell me a historical fact."
+"What's the chemical formula for water?"
+"Solve the equation: 2x + 3 = 7."
+Fun and Games:
+78. "Play 20 Questions."
+
+"Tell me a riddle."
+"Roll a virtual 20-sided die."
+"Play a trivia quiz."
+Weather and Geography:
+82. "What's the elevation of Mount Everest?"
+
+"What's the population of Tokyo?"
+"What's the distance to the moon?"
+"What's the capital of France?"
+Productivity:
+86. "Create a to-do list."
+
+"Set a meeting for tomorrow at 2 PM."
+"Read my unread emails."
+"Convert 100 USD to euros."
+"Set a daily reminder to meditate."
