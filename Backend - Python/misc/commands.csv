@@ -1,2 +1,10 @@
-CID,Description,ID_Number
-CID_Undo,Undo,769
+Name;Example;Description;Param1;Param1Type;Param1Required;Param1Description;Param2;Param2Type;Param2Required;Param2Description
+get_weather;What's the weather today?;Gets the weather on the given place in the given time;Place;string;0;The name of the place;When;string;0;The given time
+set_alarm;Set an alarm for 7 AM.;Sets an alarm for the given time;When;string;1;The given time;;;;
+set_reminder;Remind me to buy groceries at 5 PM.;Sets a reminder for the given time;Obejctive;string;1;The text of the reminder;When;string;0;The given time
+call_person;Call Anna.;Starts a call with the given person;Name;string;1;The name of the given person;;;;
+send_text;Send a text to mother.;Sends a text to a person;Name;string;1;The name of the given person;;;;
+open_application;Open spotify.;Opens the given app;App_name;string;1;The name of the app;;;;
+Set_timer;Set a timer for 10 minutes.;Sets a timer for a given period;Time;string;1;The given time period;;;;
+Set_alarm;Set an alarm for 10 o'clock.;Sets an alarm for a given time;Time;string;1;The given time;;;;
+flip_coin;Flip a coin!;Flips a coin either heads or tails;;;;;;;;

@@ -6,16 +6,19 @@ General Commands:
 "Call [contact name]."
 "Send a text to [contact name]."
 "Open [app name]."
+"Set a timer for 10 minutes."
+"Flip a coin."
+
+
 "What's on my calendar today?"
 "Tell me a joke."
-"Set a timer for 10 minutes."
 "Take a selfie."
 "Find my phone."
 "Translate 'hello' to French."
 "What's the time in Tokyo?"
 "Search for nearby restaurants."
 "What's the definition of 'serendipity'?"
-"Flip a coin."
+
 "Roll a die."
 "What's the latest news?"
 "Play some music."
@@ -25,6 +28,8 @@ General Commands:
 "Find my nearest gas station."
 "What's the exchange rate for USD to EUR?"
 "Open the camera."
+
+
 Phone Control:
 26. "Turn on/off Wi-Fi."
 

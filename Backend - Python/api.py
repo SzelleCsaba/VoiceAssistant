@@ -42,7 +42,7 @@ from sentence_transformers import SentenceTransformer
 config = {
     "hugging_face_model": "sentence-transformers/all-MiniLM-L6-v2",
     "command_data_path": "commands",
-    "index_column_name": "Description",
+    "index_column_name": "Example",
     "enable_translation": True,
     "enable_cache": True
 }
@@ -75,10 +75,18 @@ class Cache:
 class VectorDb:
     @dataclass
     class Match:
-        description: str
         confidence: float
-        cid: str
-        id: int
+        example: str
+        name: str
+        description: str
+        param1: str = None
+        param1Type: str = None 
+        param1Required: int = None
+        param1Description: str = None
+        param2: str = None
+        param2Type: str = None
+        param2Required: int = None
+        param2Description: str = None
 
     def __init__(self, app_folder) -> None:
         self.config = config
@@ -86,7 +94,7 @@ class VectorDb:
         self.model = SentenceTransformer(self.config.get("hugging_face_model"))
 
         data_path = f"{os.path.join(app_folder,self.config.get('command_data_path'))}.csv"
-        self.data = pd.read_csv(data_path, header=0)
+        self.data = pd.read_csv(data_path, header=0, sep=';')
 
         self.index_path = f"{os.path.join(app_folder,self.config.get('command_data_path'))}.index"
         if not os.path.exists(self.index_path):
@@ -133,9 +141,24 @@ class VectorDb:
         indices = indices[0]
         ret = []
         for dist, i in zip(distances, indices):
-            ret.append(self.Match(
-                self.data["Description"][i], dist, self.data["CID"][i], self.data["ID_Number"][i]))
+        
+            # if the parameter in not 'NaN' and the string is not empty then it's considered a valid value
+            if not pd.isnull(self.data["Param2"][i]) and self.data["Param2"][i] != "": # 2 params
+                ret.append(self.Match(dist, 
+                self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i],
+                self.data["Param1"][i], self.data["Param1Type"][i], self.data["Param1Required"][i], self.data["Param1Description"][i],
+                self.data["Param2"][i], self.data["Param2Type"][i], self.data["Param2Required"][i], self.data["Param2Description"][i]))
+            
+            elif not pd.isnull(self.data["Param1"][i]) and self.data["Param1"][i] != "": # 1 param
+                ret.append(self.Match(dist, 
+                self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i],
+                self.data["Param1"][i], self.data["Param1Type"][i], self.data["Param1Required"][i], self.data["Param1Description"][i]))
+
+            else:   # no params
+                ret.append(self.Match(dist, 
+                self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i]))
         return ret
+
 
 
 class TextProcessor:
@@ -148,11 +171,11 @@ class TextProcessor:
 
         openai.api_key = os.getenv("OPENAI_API_KEY")
 
-    def filter_text(self, text: str) -> Union[int, None]:
+    def filter_text(self, text: str) -> Union[str, None]:
         if self.translation_enabled:
             text = self._translate_gpt(text)
 
-        k = 5
+        k = 3
         results = self.db.get_top_k_match(text, k)
         max_score = results[0].confidence
 
@@ -162,16 +185,9 @@ class TextProcessor:
             lines = []
 
             for match in results:
-                lines.append(f"{match.cid} - {match.description}")
+                lines.append(f"{match.name} - {match.example}") # TODO formatting for parameters, check correct formatting in vectordb top_k_match
 
-            command = self._process_text_gpt(text, lines)
-
-            if command is not None:
-                index = next(
-                    (match.id for match in results if match.cid == command), None)
-                return index
-            else:
-                return None
+            return self._process_text_gpt(text, lines)
 
     def _process_text_gpt(self, prompt: str, func_string_list: list[str]) -> Union[str, None]:
         if prompt == "":
@@ -209,13 +225,11 @@ class TextProcessor:
             function_call="auto",
             temperature=0,
         )
-
         response_message = response["choices"][0]["message"]
 
         if response_message.get("function_call"):
-            function_name = response_message["function_call"]["name"]
-            return function_name
-        
+            function = response_message["function_call"]
+            return function
 
         return None
 
@@ -234,7 +248,7 @@ class TextProcessor:
                 "\"{} \""
                 "to english as a voice command given to a voice assistant!\n"
                 "Just answer with the translation!"
-            ).format(text)
+            ).format(text)           
             messages = [
                 {
                     "role": "user",
@@ -254,69 +268,73 @@ class TextProcessor:
             return text
 
 
-try:
-    log_dir = os.path.join(os.path.expanduser("~"), "RestAPI_logs")
-    os.makedirs(log_dir, exist_ok=True)
+app = Flask(__name__)
+log_dir = os.path.join(os.path.expanduser("~"), "RestAPI_logs")
+os.makedirs(log_dir, exist_ok=True)
 
-    log = logging.getLogger('werkzeug')
-    log.setLevel(logging.ERROR)
-    logging.basicConfig(
-                    filename=os.path.join(log_dir, "RestAPI.log"),
-                    format="%(message)s",
-                    filemode="a",
-                    encoding="UTF-8")
-    logger = logging.getLogger()
-    logger.setLevel(logging.ERROR)
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+logging.basicConfig(
+                filename=os.path.join(log_dir, "RestAPI.log"),
+                format="%(message)s",
+                filemode="a",
+                encoding="UTF-8")
+logger = logging.getLogger()
+logger.setLevel(logging.ERROR)
 
-    app_folder = r"C:\Users\Csaba\Desktop\SZAKDOGA\misc"
-    vdb = VectorDb(app_folder)
-    tp = TextProcessor(vdb)
-    app = Flask(__name__)
-
-    @app.route('/text', methods=['POST'])
-    def interpret_text():
-        text = request.json.get('text')
-        res = int(tp.filter_text(text))
-        logger.critical(["t", text, res])
-        return jsonify(res)
-
-    @app.route('/voice', methods=['POST'])
-    def interpret_voice():
-        try:
-            # Check if the request has the 'audio' field with an uploaded file
-            if 'audio' not in request.files:
-                return "No audio file provided", 400
-
-            audio_file = request.files['audio']
-
-            # Check if the file has a valid extension
-            if audio_file and audio_file.filename.endswith(('.wav', '.mp3')):
-                # Save the uploaded file to the current working directory
-                uploaded_filename = audio_file.filename
-                upload_path = os.path.join(os.getcwd(), uploaded_filename)
-                audio_file.save(upload_path)
-
-
-                audio_file = open(upload_path, "rb")
-                # Process the audio data here
-                lang = request.form.get('lang', 'en')  # Get the language parameter
-                result = openai.Audio.transcribe("whisper-1", audio_file, language=lang)
-                text = result["text"]
-                text = text.replace('"', '')
-                res = int(tp.filter_text(text))
-                logger.critical(["v", text, res])
-                return jsonify(res)
-            else:
-                return "Invalid audio file format", 400
-        except Exception as e:
-            logger.error(["e", str(e)])
-            return str(e), 500
+# GitHub Desktop default folder szcsa is the Windows username
+app_folder = r"C:\Users\szcsa\Documents\GitHub\SzakDoga\Backend - Python\misc" 
+vdb = VectorDb(app_folder)
+tp = TextProcessor(vdb)
     
-    @app.errorhandler(Exception)
-    def handle_exception(e):
+
+@app.route('/text', methods=['POST'])
+def interpret_text():
+    text = request.json.get('text')
+    res = tp.filter_text(text)
+    logger.critical(["t", text, res])
+    return jsonify(res)
+
+@app.route('/voice', methods=['POST'])
+def interpret_voice():
+    try:
+        # Check if the request has the 'audio' field with an uploaded file
+        if 'audio' not in request.files:
+            return "No audio file provided", 400
+
+        audio_file = request.files['audio']
+
+        # Check if the file has a valid extension
+        if audio_file and audio_file.filename.endswith(('.wav', '.mp3')):
+            # Save the uploaded file to the current working directory
+            uploaded_filename = audio_file.filename
+            upload_path = os.path.join(os.getcwd(), uploaded_filename)
+            audio_file.save(upload_path)
+
+
+            audio_file = open(upload_path, "rb")
+            # Process the audio data here
+            lang = request.form.get('lang', 'en')  # Get the language parameter
+            result = openai.Audio.transcribe("whisper-1", audio_file, language=lang)
+            text = result["text"]
+            text = text.replace('"', '')
+            res = tp.filter_text(text)
+            logger.critical(["v", text, res])
+            return jsonify(res)
+        else:
+            return "Invalid audio file format", 400
+    except Exception as e:
         logger.error(["e", str(e)])
         return str(e), 500
 
+@app.errorhandler(Exception)
+def handle_exception(e):
+    logger.error(["e", str(e)])
+    return str(e), 500
+
+
+
+'''
 except Exception as e:
     logger.error(["e", str(e)])
-    #print(str(e))
+    #print(str(e))'''
