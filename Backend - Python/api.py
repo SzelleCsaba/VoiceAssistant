@@ -29,6 +29,7 @@ import os
 import logging
 from typing import Union
 from dataclasses import dataclass
+import json
 
 import faiss
 import openai
@@ -59,17 +60,26 @@ class Cache:
                 reader = csv.reader(f)
                 self.pairs = {rows[0]: rows[1] for rows in reader if len(rows) == 2}
 
-    def add(self, key: str, value: str) -> None:
+    def add(self, key: str, value) -> None:
         if self.enabled:
+            if isinstance(value, dict):
+                value = json.dumps(value)
+
             self.pairs[key] = value
             with open(self.filename, 'w', newline='', encoding='utf-8') as f:
                 writer = csv.writer(f)
                 for key, value in self.pairs.items():
                     writer.writerow([key, value])
 
-    def get(self, key: str) -> Union[None, str]:
+    def get(self, key: str):
         if self.enabled:
-            return self.pairs.get(key, None)
+            value = self.pairs.get(key)
+            if value is not None:
+                if value.startswith('{') or value.startswith('['):
+                    return json.loads(value)
+                else:
+                    return value
+
 
 
 class VectorDb:
@@ -182,14 +192,14 @@ class TextProcessor:
         if max_score < 0.4:
             return None
         else:
-            lines = []
+            matches = []
 
             for match in results:
-                lines.append(f"{match.name} - {match.example}") # TODO formatting for parameters, check correct formatting in vectordb top_k_match
+                matches.append(match)  # Store the entire Match object
 
-            return self._process_text_gpt(text, lines)
+            return self._process_text_gpt(text, matches)
 
-    def _process_text_gpt(self, prompt: str, func_string_list: list[str]) -> Union[str, None]:
+    def _process_text_gpt(self, prompt: str, matches: list[VectorDb.Match]) -> Union[str, None]:
         if prompt == "":
             return None
         
@@ -200,17 +210,35 @@ class TextProcessor:
 
         functions = []
 
-        for line in func_string_list:
-            f = line.split(" - ")
-            functions.append({
-                "name": f[0],
-                "description": f[1],
+        for match in matches:
+            function = {
+                "name": match.name,
+                "description": match.description,
                 "parameters": {
                     "type": "object",
                     "properties": {},
                     "required": []
                 }
-            })
+            }
+
+            # Add parameters to the function
+            if match.param1:
+                function["parameters"]["properties"][match.param1] = {
+                    "type": match.param1Type,
+                    "description": match.param1Description
+                }
+                if match.param1Required == 1:
+                    function["parameters"]["required"].append(match.param1)
+
+            if match.param2:
+                function["parameters"]["properties"][match.param2] = {
+                    "type": match.param2Type,
+                    "description": match.param2Description
+                }
+                if match.param2Required == 1:
+                    function["parameters"]["required"].append(match.param2)
+
+            functions.append(function)
 
         messages = [
             {
@@ -229,6 +257,7 @@ class TextProcessor:
 
         if response_message.get("function_call"):
             function = response_message["function_call"]
+            self.gpt_run_cache.add(prompt, function)
             return function
 
         return None
@@ -262,6 +291,9 @@ class TextProcessor:
             )
             translation = response['choices'][0]['message']['content']
             translation = translation.replace('"', '')
+
+            # Cache the translation
+            self.translation_cache.add(text, translation)
 
             return translation
         else:
