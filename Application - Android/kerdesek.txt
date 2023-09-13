@@ -1,0 +1,8 @@
+-hogyan lehet alkalmazást megnyitni a neve alapján intenttel -> enyém deprecated
+
+-wifi ki/be kapcsolása intenttel -> enyém deprecated
+-bluetooth ki/be kapcsolása intenttel -> enyém deprecated / android dev fórum kód nem jó https://developer.android.com/guide/topics/connectivity/bluetooth/setup
+-fotó / videó app megnyitása -> android dev fórum kód nem jó https://developer.android.com/guide/components/intents-common#CameraStill
+
+
+-hogyan kellene struktúrálni a programot? hova kellene rakni ezeket az intenteket? (activity / service / külön modul/ stb..)
