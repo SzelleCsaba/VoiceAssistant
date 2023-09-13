@@ -1,9 +1,11 @@
 Name;Example;Description;Param1;Param1Type;Param1Required;Param1Description;Param2;Param2Type;Param2Required;Param2Description
-get_weather;What's the weather today?;Gets the weather on the given place in the given time;Place;string;0;The name of the place;When;string;0;The given date 
-set_alarm;Set an alarm for 10 o'clock.;Sets an alarm for the given time;When;string;1;The given time in HH:MM 24H format;;;;
-set_reminder;Remind me to buy groceries at 5 PM.;Sets a reminder for the given time;Obejctive;string;1;The text of the reminder;When;string;0;The given time in HH:MM  24H format
-call_person;Call Anna.;Starts a call with the given person;Name;string;1;The name of the given person;;;;
-send_text;Send a text to mother.;Sends a text to a person;Name;string;1;The name of the given person;;;;
-open_application;Open spotify.;Opens the given app;App_name;string;1;The name of the app;;;;
-set_timer;Set a timer for 10 minutes.;Sets a timer for a given period;Time;string;1;The given time period in HH:MM:SS format;;;;
-flip_coin;Flip a coin!;Flips a coin either heads or tails;;;;;;;;
+setAlarm;Set an alarm for 10 o'clock.;Sets an alarm for the given time;time;string;1;The given time in HH:MM 24H format;message;string;0;the message or the name of the alarm
+createNote;Remind me to buy groceries ;Sets a note ;text;string;1;The text of the note;subject;string;0;the subject or the name of the note
+setTimer;Set a timer for 10 minutes.;Sets a timer for a given period;time;string;1;The given time period in HH:MM:SS format;message;string;0;the message or the name of the reminder
+flipCoin;Flip a coin!;Flips a coin either heads or tails;;;;;;;;
+callPerson;Call Anna.;Starts a call with the given person;name;string;1;The name of the given person;;;;
+sendText;Send a text to mother.;Sends a text to a person;name;string;1;The name of the given person;;;;
+openApplication;Open spotify.;Opens the given app;appName;string;1;The name of the app;;;;
+getWeather;What's the weather today?;Gets the weather on the given place in the given time;place;string;0;The name of the place;time;string;0;The given date 
+toggleWifi;Turn on/off the Wi-fi;turns on or off the Wi-fi;enable;boolean;1;true if it needs to be turned on, false if turned off;;;;
+toggleBluetooth;Turn on/off bluetooth;turns on or off the bluetooth;enable;boolean;1;true if it needs to be turned on, false if turned off;;;;

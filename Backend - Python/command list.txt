@@ -8,6 +8,8 @@ General Commands:
 "Open [app name]."
 "Set a timer for 10 minutes."
 "Flip a coin."
+------------------------------------ first line
+
 
 
 "What's on my calendar today?"
@@ -18,12 +20,10 @@ General Commands:
 "What's the time in Tokyo?"
 "Search for nearby restaurants."
 "What's the definition of 'serendipity'?"
-
 "Roll a die."
 "What's the latest news?"
 "Play some music."
 "What's the stock price of [company]?"
-"Turn on/off Bluetooth."
 "Navigate to [location]."
 "Find my nearest gas station."
 "What's the exchange rate for USD to EUR?"
@@ -31,8 +31,8 @@ General Commands:
 
 
 Phone Control:
-26. "Turn on/off Wi-Fi."
-
+"Turn on/off Wi-Fi."
+"Turn on/off Bluetooth."
 "Increase/decrease screen brightness."
 "Enable/Disable Do Not Disturb."
 "Take a screenshot."
