@@ -1,0 +1,58 @@
+package hu.bme.aut.android.voiceassistant.domain.api
+
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import java.io.File
+import java.io.IOException
+
+
+class ApiFunctions(private val apiService: ApiService) {
+    suspend fun interpretText(text: String): String? {
+        val jsonObject = JSONObject()
+        jsonObject.put("text", text)
+
+        val requestBody = jsonObject.toString().toRequestBody("application/json".toMediaTypeOrNull())
+        val call = apiService.interpretText(requestBody)
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = call.execute()
+                if (response.isSuccessful) {
+                    response.body()?.string()
+                } else {
+                    null
+
+                }
+            } catch (e: IOException) {
+                null
+            }
+        }
+    }
+
+    suspend fun interpretVoice(audioPath: String, lang: String): String? {
+        val file = File(audioPath)
+        val requestBody = file.asRequestBody("audio/*".toMediaTypeOrNull())
+        val audioPart = MultipartBody.Part.createFormData("audio", file.name, requestBody)
+        val langRequestBody = lang.toRequestBody("text/plain".toMediaTypeOrNull())
+        val call = apiService.interpretVoice(audioPart, langRequestBody)
+
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = call.execute()
+                if (response.isSuccessful) {
+                    response.body()?.string()
+                } else {
+                    null
+                }
+            } catch (e: IOException) {
+                null
+            }
+        }
+    }
+}
+

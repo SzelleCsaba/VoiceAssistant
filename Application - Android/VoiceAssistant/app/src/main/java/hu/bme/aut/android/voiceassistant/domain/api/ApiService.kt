@@ -21,7 +21,8 @@ interface ApiService {
 }
 
 object ApiClient {
-    private const val BASE_URL = "http://your-api-url.com" // TODO change to actual url once it is deployed
+    private const val BASE_URL = "http://192.168.1.198:8080/" // TODO change to actual url once it is deployed
+    // TODO do not forget to remove res/xml/network_security_config once it is not needed + Manifest!
 
     val instance: ApiService by lazy {
         val retrofit = Retrofit.Builder()

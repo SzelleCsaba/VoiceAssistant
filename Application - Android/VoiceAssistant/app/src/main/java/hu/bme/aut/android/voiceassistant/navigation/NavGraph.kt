@@ -1,11 +1,13 @@
 package hu.bme.aut.android.voiceassistant.navigation
 
 import android.provider.Settings
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import hu.bme.aut.android.voiceassistant.feature.BluetoothOnScreen
 import hu.bme.aut.android.voiceassistant.feature.MainScreen
 import hu.bme.aut.android.voiceassistant.feature.RecordVideoScreen
@@ -39,25 +41,57 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             })
         }
 
-        composable(Screen.SearchWeb.route) {
-            SearchWebScreen(query = "android", onBackPressed = {
-                navController.popBackStack()
-            })
-            // TODO handle the query
+        composable(
+            Screen.SearchWeb.route + "?query={query}",
+            arguments = listOf(
+                navArgument("query") { defaultValue = "android"}
+            )
+        ) { backStackEntry ->
+            val query = backStackEntry.arguments?.getString("query")
+
+            SearchWebScreen(query = query ?: "android",
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
         }
 
-        composable(Screen.SetAlarm.route) {
-            SetAlarmScreen(message = "android", time = "20:00", onBackPressed = {
-                navController.popBackStack()
-            })
-            // TODO handle the query
+        composable(
+            Screen.SetAlarm.route + "?message={message}&time={time}",
+            arguments = listOf(
+                navArgument("message") { defaultValue = "alarm" },
+                navArgument("time") { defaultValue = "12:00" }
+            )
+        ) { backStackEntry ->
+            val message = backStackEntry.arguments?.getString("message")
+            val time = backStackEntry.arguments?.getString("time")
+
+            SetAlarmScreen(
+                message = message ?: "alarm",
+                time = time ?: "12:00",
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
         }
 
-        composable(Screen.SetTimer.route) {
-            SetTimerScreen(message = "timer", time = "00:02:15", onBackPressed = {
-                navController.popBackStack()
-            })
-            // TODO handle the query
+        composable(
+            Screen.SetTimer.route + "?message={message}&time={time}",
+            arguments = listOf(
+                navArgument("message") { defaultValue = "timer" },
+                navArgument("time") { defaultValue = "00:05:00" }
+            )
+        ) { backStackEntry ->
+            val message = backStackEntry.arguments?.getString("message")
+            val time = backStackEntry.arguments?.getString("time")
+
+            SetTimerScreen(
+                message = message ?: "timer",
+                time = time ?: "00:05:00",
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
         }
 
         composable(Screen.BluetoothOn.route) {

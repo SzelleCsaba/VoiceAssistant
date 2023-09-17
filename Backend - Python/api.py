@@ -167,6 +167,7 @@ class VectorDb:
             else:   # no params
                 ret.append(self.Match(dist, 
                 self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i]))
+        #logger.critical(["v", text, ret])
         return ret
 
 
@@ -189,7 +190,7 @@ class TextProcessor:
         results = self.db.get_top_k_match(text, k)
         max_score = results[0].confidence
 
-        if max_score < 0.4:
+        if max_score < 0.33:
             return None
         else:
             matches = []
@@ -324,7 +325,7 @@ tp = TextProcessor(vdb)
 def interpret_text():
     text = request.json.get('text')
     res = tp.filter_text(text)
-    logger.critical(["t", text, res])
+    #logger.critical(["t", text, res])
     return jsonify(res)
 
 @app.route('/voice', methods=['POST'])
@@ -351,7 +352,8 @@ def interpret_voice():
             text = result["text"]
             text = text.replace('"', '')
             res = tp.filter_text(text)
-            logger.critical(["v", text, res])
+            
+            #logger.critical(["t", text, res])
             return jsonify(res)
         else:
             return "Invalid audio file format", 400
