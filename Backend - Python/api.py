@@ -45,7 +45,7 @@ config = {
     "command_data_path": "commands",
     "index_column_name": "Example",
     "enable_translation": True,
-    "enable_cache": True
+    "enable_cache": False
 }
 
 
@@ -80,24 +80,23 @@ class Cache:
                 else:
                     return value
 
+@dataclass
+class Parameter:
+    name: str = None
+    type: str = None
+    required: int = None
+    description: str = None
 
+@dataclass
+class Match:
+    confidence: float
+    example: str
+    name: str
+    description: str
+    param1: Parameter = Parameter()
+    param2: Parameter = Parameter()
 
 class VectorDb:
-    @dataclass
-    class Match:
-        confidence: float
-        example: str
-        name: str
-        description: str
-        param1: str = None
-        param1Type: str = None 
-        param1Required: int = None
-        param1Description: str = None
-        param2: str = None
-        param2Type: str = None
-        param2Required: int = None
-        param2Description: str = None
-
     def __init__(self, app_folder) -> None:
         self.config = config
 
@@ -151,23 +150,20 @@ class VectorDb:
         indices = indices[0]
         ret = []
         for dist, i in zip(distances, indices):
-        
-            # if the parameter in not 'NaN' and the string is not empty then it's considered a valid value
+
+            
             if not pd.isnull(self.data["Param2"][i]) and self.data["Param2"][i] != "": # 2 params
-                ret.append(self.Match(dist, 
-                self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i],
-                self.data["Param1"][i], self.data["Param1Type"][i], self.data["Param1Required"][i], self.data["Param1Description"][i],
-                self.data["Param2"][i], self.data["Param2Type"][i], self.data["Param2Required"][i], self.data["Param2Description"][i]))
+                param1 = Parameter(self.data["Param1"][i], self.data["Param1Type"][i], self.data["Param1Required"][i], self.data["Param1Description"][i])
+                param2 = Parameter(self.data["Param2"][i], self.data["Param2Type"][i], self.data["Param2Required"][i], self.data["Param2Description"][i])
+                ret.append(Match(dist, self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i], param1, param2))
             
             elif not pd.isnull(self.data["Param1"][i]) and self.data["Param1"][i] != "": # 1 param
-                ret.append(self.Match(dist, 
-                self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i],
-                self.data["Param1"][i], self.data["Param1Type"][i], self.data["Param1Required"][i], self.data["Param1Description"][i]))
-
+                param1 = Parameter(self.data["Param1"][i], self.data["Param1Type"][i], self.data["Param1Required"][i], self.data["Param1Description"][i])
+                ret.append(Match(dist, self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i], param1))
+            
             else:   # no params
-                ret.append(self.Match(dist, 
-                self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i]))
-        #logger.critical(["v", text, ret])
+                ret.append(Match(dist, self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i]))
+            
         return ret
 
 
@@ -183,14 +179,16 @@ class TextProcessor:
         openai.api_key = os.getenv("OPENAI_API_KEY")
 
     def filter_text(self, text: str) -> Union[str, None]:
+        original_text = text
         if self.translation_enabled:
             text = self._translate_gpt(text)
 
-        k = 3
+        k = 2
         results = self.db.get_top_k_match(text, k)
         max_score = results[0].confidence
+        second_max_score = results[1].confidence
 
-        if max_score < 0.33:
+        if max_score < 0.33 and max_score-second_max_score > 0.2:
             return None
         else:
             matches = []
@@ -198,14 +196,14 @@ class TextProcessor:
             for match in results:
                 matches.append(match)  # Store the entire Match object
 
-            return self._process_text_gpt(text, matches)
+            return self._process_text_gpt(text, matches, original_text)
 
-    def _process_text_gpt(self, prompt: str, matches: list[VectorDb.Match]) -> Union[str, None]:
+    def _process_text_gpt(self, prompt: str, matches: list[Match], original_prompt: str) -> Union[str, None]:
         if prompt == "":
             return None
         
         # Check the cache first
-        cached_response = self.gpt_run_cache.get(prompt)
+        cached_response = self.gpt_run_cache.get(original_prompt)
         if cached_response:
             return cached_response
 
@@ -223,28 +221,28 @@ class TextProcessor:
             }
 
             # Add parameters to the function
-            if match.param1:
-                function["parameters"]["properties"][match.param1] = {
-                    "type": match.param1Type,
-                    "description": match.param1Description
+            if match.param1.name:
+                function["parameters"]["properties"][match.param1.name] = {
+                    "type": match.param1.type,
+                    "description": match.param1.description
                 }
-                if match.param1Required == 1:
-                    function["parameters"]["required"].append(match.param1)
+                if match.param1.required == 1:
+                    function["parameters"]["required"].append(match.param1.name)
 
-            if match.param2:
-                function["parameters"]["properties"][match.param2] = {
-                    "type": match.param2Type,
-                    "description": match.param2Description
+            if match.param2.name:
+                function["parameters"]["properties"][match.param2.name] = {
+                    "type": match.param2.type,
+                    "description": match.param2.description
                 }
-                if match.param2Required == 1:
-                    function["parameters"]["required"].append(match.param2)
+                if match.param2.required == 1:
+                    function["parameters"]["required"].append(match.param2.name)
 
             functions.append(function)
 
         messages = [
             {
                 "role": "user",
-                "content": prompt,
+                "content": original_prompt,
             }
         ]
         response = openai.ChatCompletion.create(
@@ -258,7 +256,9 @@ class TextProcessor:
 
         if response_message.get("function_call"):
             function = response_message["function_call"]
-            self.gpt_run_cache.add(prompt, function)
+
+            self.gpt_run_cache.add(original_prompt, function)
+
             return function
 
         return None
@@ -267,10 +267,6 @@ class TextProcessor:
         # safety net to not translate things that are too short and dont make any sense
         if len(text) < 4:
             return text
-        
-        cached_translation = self.translation_cache.get(text.lower())
-        if cached_translation:
-            return cached_translation
 
         if detect(text) != 'en':
             prompt = (
@@ -293,13 +289,9 @@ class TextProcessor:
             translation = response['choices'][0]['message']['content']
             translation = translation.replace('"', '')
 
-            # Cache the translation
-            self.translation_cache.add(text, translation)
-
             return translation
         else:
             return text
-
 
 app = Flask(__name__)
 log_dir = os.path.join(os.path.expanduser("~"), "RestAPI_logs")
@@ -338,7 +330,7 @@ def interpret_voice():
         audio_file = request.files['audio']
 
         # Check if the file has a valid extension
-        if audio_file and audio_file.filename.endswith(('.wav', '.mp3')):
+        if audio_file and audio_file.filename.endswith(('.wav', '.mp3', ".mp4")):
             # Save the uploaded file to the current working directory
             uploaded_filename = audio_file.filename
             upload_path = os.path.join(os.getcwd(), uploaded_filename)
@@ -366,9 +358,3 @@ def handle_exception(e):
     logger.error(["e", str(e)])
     return str(e), 500
 
-
-
-'''
-except Exception as e:
-    logger.error(["e", str(e)])
-    #print(str(e))'''
