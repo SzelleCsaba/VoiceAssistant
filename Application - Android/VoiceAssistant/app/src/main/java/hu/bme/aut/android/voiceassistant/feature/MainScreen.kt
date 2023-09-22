@@ -95,7 +95,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                             Toast.makeText(context, "Something went wrong", Toast.LENGTH_SHORT).show()
                         }
                     }
-                }// TODO routing paraméterek kisezdése
+                }
 
                 //TODO megcsinálni a Screenekben, hogy miután végeztek a dolgukkal, térjenek vissza a mainre.
 

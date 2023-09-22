@@ -20,7 +20,10 @@ sealed class Screen(val route: String) {
     object BluetoothSettings: Screen("bluetooth_settings")
     object DateSettings: Screen("date_settings")
 
+    object CreateNote: Screen("create_note")
 
+    object SendText: Screen("send_text")
+    object StartCall: Screen("start_call")
 
 
 }

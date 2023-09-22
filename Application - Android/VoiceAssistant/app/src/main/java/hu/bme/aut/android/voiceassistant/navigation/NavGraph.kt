@@ -1,7 +1,6 @@
 package hu.bme.aut.android.voiceassistant.navigation
 
 import android.provider.Settings
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -9,12 +8,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import hu.bme.aut.android.voiceassistant.feature.BluetoothOnScreen
+import hu.bme.aut.android.voiceassistant.feature.CreateNoteScreen
 import hu.bme.aut.android.voiceassistant.feature.MainScreen
 import hu.bme.aut.android.voiceassistant.feature.RecordVideoScreen
 import hu.bme.aut.android.voiceassistant.feature.SearchWebScreen
+import hu.bme.aut.android.voiceassistant.feature.SendTextScreen
 import hu.bme.aut.android.voiceassistant.feature.SetAlarmScreen
 import hu.bme.aut.android.voiceassistant.feature.SetTimerScreen
 import hu.bme.aut.android.voiceassistant.feature.SettingsScreen
+import hu.bme.aut.android.voiceassistant.feature.StartCallScreen
 import hu.bme.aut.android.voiceassistant.feature.TakePictureScreen
 
 @Composable
@@ -142,6 +144,60 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
                 navController.popBackStack()
             })
         }
+
+        composable(
+            Screen.CreateNote.route + "?text={text}&subject={subject}",
+            arguments = listOf(
+                navArgument("text") { defaultValue = "empty note" },
+                navArgument("subject") { defaultValue = "Note" }
+            )
+        ) { backStackEntry ->
+            val text = backStackEntry.arguments?.getString("text")
+            val subject = backStackEntry.arguments?.getString("subject")
+
+            CreateNoteScreen(
+                subject = subject ?: "Note",
+                text = text ?: "",
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(
+            Screen.SendText.route + "?name={name}&message={message}",
+            arguments = listOf(
+                navArgument("name") { defaultValue = "name" },
+                navArgument("message") { defaultValue = "message" }
+            )
+        ) { backStackEntry ->
+            val name = backStackEntry.arguments?.getString("name")
+            val message = backStackEntry.arguments?.getString("message")
+
+            SendTextScreen(
+                name = name ?: "",
+                message = message ?: "",
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(
+            Screen.StartCall.route + "?name={name}",
+            arguments = listOf(
+                navArgument("name") { defaultValue = "name" }
+            )
+        ) { backStackEntry ->
+            val name = backStackEntry.arguments?.getString("name")
+            StartCallScreen(
+                name = name ?: "",
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
 
 
         /* TODO ezeket megcsinálni, mint a többit
