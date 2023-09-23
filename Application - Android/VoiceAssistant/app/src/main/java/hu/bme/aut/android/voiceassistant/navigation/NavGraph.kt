@@ -145,6 +145,52 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             })
         }
 
+
+
+        /* TODO ezeket megcsinálni, mint a többit
+         */
+        composable(Screen.LocaleSettings.route) {
+            SettingsScreen(Settings.ACTION_LOCALE_SETTINGS ,onBackPressed = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(Screen.InputSettings.route) {
+            SettingsScreen(Settings.ACTION_INPUT_METHOD_SETTINGS ,onBackPressed = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(Screen.DisplaySettings.route) {
+            SettingsScreen(Settings.ACTION_DISPLAY_SETTINGS ,onBackPressed = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(Screen.SecuritySettings.route) {
+            SettingsScreen(Settings.ACTION_SECURITY_SETTINGS ,onBackPressed = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(Screen.LocationSettings.route) {
+            SettingsScreen(Settings.ACTION_LOCATION_SOURCE_SETTINGS ,onBackPressed = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(Screen.InternalStorageSettings.route) {
+            SettingsScreen(Settings.ACTION_INTERNAL_STORAGE_SETTINGS ,onBackPressed = {
+                navController.popBackStack()
+            })
+        }
+
+        composable(Screen.MemoryCardSettings.route) {
+            SettingsScreen(Settings.ACTION_MEMORY_CARD_SETTINGS ,onBackPressed = {
+                navController.popBackStack()
+            })
+        }
+
         composable(
             Screen.CreateNote.route + "?text={text}&subject={subject}",
             arguments = listOf(
@@ -198,16 +244,5 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             )
         }
 
-
-
-        /* TODO ezeket megcsinálni, mint a többit
-    ACTION_LOCALE_SETTINGS
-    ACTION_INPUT_METHOD_SETTINGS
-    ACTION_DISPLAY_SETTINGS
-    ACTION_SECURITY_SETTINGS
-    ACTION_LOCATION_SOURCE_SETTINGS
-    ACTION_INTERNAL_STORAGE_SETTINGS
-    ACTION_MEMORY_CARD_SETTINGS
-         */
     }
 }

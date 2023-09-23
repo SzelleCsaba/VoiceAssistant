@@ -19,6 +19,13 @@ sealed class Screen(val route: String) {
     object ApnSettings: Screen("apn_settings")
     object BluetoothSettings: Screen("bluetooth_settings")
     object DateSettings: Screen("date_settings")
+    object LocaleSettings: Screen("locale_settings")
+    object InputSettings: Screen("input_settings")
+    object DisplaySettings: Screen("display_settings")
+    object SecuritySettings: Screen("security_settings")
+    object LocationSettings: Screen("location_settings")
+    object InternalStorageSettings: Screen("internalstorage_settings")
+    object MemoryCardSettings: Screen("memorycard_settings")
 
     object CreateNote: Screen("create_note")
 

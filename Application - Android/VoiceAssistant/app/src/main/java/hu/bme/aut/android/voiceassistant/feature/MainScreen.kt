@@ -52,7 +52,6 @@ fun MainScreen(onSendClick: (String) -> Unit) {
     val apiService = ApiClient.instance
     val apiFunctions = ApiFunctions(apiService)
     val context = LocalContext.current
-
     val isProcessing = remember { mutableStateOf(false) }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -109,24 +108,25 @@ fun MainScreen(onSendClick: (String) -> Unit) {
             }
             Spacer(modifier = Modifier.height(200.dp))
 
-            Button(
-                modifier = Modifier.size(200.dp), // Set the size of the button
-                shape = CircleShape,
-                elevation = ButtonDefaults.buttonElevation(
-                    defaultElevation = 15.dp,
-                ),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.tertiary
-                ),
-                onClick = {}                             //TODO hangfelvétel
-            ) {
-                Text(
-                    text = "Voice",
-                    fontSize = 30.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                )
-            }
+             VoiceRecordingScreen()
+            /*                      Button(
+                           modifier = Modifier.size(200.dp),
+                           shape = CircleShape,
+                           elevation = ButtonDefaults.buttonElevation(
+                               defaultElevation = 15.dp,
+                           ),
+                           colors = ButtonDefaults.buttonColors(
+                               containerColor = MaterialTheme.colorScheme.tertiary
+                           ),
+                           onClick = {} //TODO hangfelvétel
+                       ) {
+                           Text(
+                               text = "Voice",
+                               fontSize = 30.sp,
+                               fontWeight = FontWeight.Bold,
+                               textAlign = TextAlign.Center,
+                           )
+                       }*/
         }
         if (isProcessing.value) {
             Box(

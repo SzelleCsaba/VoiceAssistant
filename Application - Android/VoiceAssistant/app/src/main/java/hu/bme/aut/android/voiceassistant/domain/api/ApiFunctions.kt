@@ -1,5 +1,6 @@
 package hu.bme.aut.android.voiceassistant.domain.api
 
+import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -44,13 +45,18 @@ class ApiFunctions(private val apiService: ApiService) {
         return withContext(Dispatchers.IO) {
             try {
                 val response = call.execute()
+
                 if (response.isSuccessful) {
+                    Log.i("api", "sikeres")
                     response.body()?.string()
                 } else {
+                    Log.i("api", "nem sikeres")
                     null
                 }
             } catch (e: IOException) {
+                Log.i("api", e.toString())
                 null
+
             }
         }
     }
