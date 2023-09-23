@@ -18,16 +18,6 @@ class Functions : Service(){
         return super.onStartCommand(intent, flags, startId)
     }
     /*
-        fun createNote(subject: String = "note", text: String) {
-            val intent = Intent(NoteIntents.ACTION_CREATE_NOTE).apply {
-                putExtra(NoteIntents.EXTRA_NAME, subject)
-                putExtra(NoteIntents.EXTRA_TEXT, text)
-            }
-            if (intent.resolveActivity(packageManager) != null) {
-                startActivity(intent)
-            }
-        }
-
         fun flipCoin() {
             val random = Random()
             val result = if (random.nextBoolean()) "Heads" else "Tails"

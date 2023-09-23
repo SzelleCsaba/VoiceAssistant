@@ -21,6 +21,7 @@ fun SearchWebScreen(query: String, onBackPressed: () -> Unit) {
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         }
+        onBackPressed()
     }
 
     Text(

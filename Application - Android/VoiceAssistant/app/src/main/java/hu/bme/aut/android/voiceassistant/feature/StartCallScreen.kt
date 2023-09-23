@@ -52,6 +52,7 @@ fun StartCallScreen(name: String, onBackPressed: () -> Unit) {
         } else {
             permissionLauncher.launch(permission)
         }
+        onBackPressed()
     }
 
     Button(

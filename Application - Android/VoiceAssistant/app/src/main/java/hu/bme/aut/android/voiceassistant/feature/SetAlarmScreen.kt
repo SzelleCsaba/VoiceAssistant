@@ -21,6 +21,7 @@ fun SetAlarmScreen(message: String = "alarm", time: String, onBackPressed: () ->
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         }
+        onBackPressed()
     }
 
     Button(

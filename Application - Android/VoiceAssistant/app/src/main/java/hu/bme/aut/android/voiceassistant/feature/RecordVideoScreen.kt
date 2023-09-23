@@ -50,6 +50,7 @@ fun RecordVideoScreen(onBackPressed: () -> Unit) {
         } else {
             permissionLauncher.launch(permission)
         }
+        onBackPressed()
     }
 
     Button(

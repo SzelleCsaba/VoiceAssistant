@@ -50,6 +50,7 @@ fun TakePictureScreen(onBackPressed: () -> Unit) {
         } else {
             permissionLauncher.launch(permission)
         }
+        onBackPressed()
     }
 
     Button(

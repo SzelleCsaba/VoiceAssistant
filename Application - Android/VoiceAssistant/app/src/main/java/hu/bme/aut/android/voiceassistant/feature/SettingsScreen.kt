@@ -17,6 +17,7 @@ fun SettingsScreen(settings: String, onBackPressed: () -> Unit) {
 
     LaunchedEffect(Unit) {
         openSettings(settings, context)
+        onBackPressed()
     }
 
     Button(

@@ -58,6 +58,7 @@ fun SendTextScreen(name: String, message: String, onBackPressed: () -> Unit) {
         } else {
             permissionLauncher.launch(permission)
         }
+        onBackPressed()
     }
 
     Button(

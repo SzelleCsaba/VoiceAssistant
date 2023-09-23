@@ -21,6 +21,7 @@ fun CreateNoteScreen(subject: String = "note", text: String, onBackPressed: () -
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         }
+        onBackPressed()
     }
 
     Button(

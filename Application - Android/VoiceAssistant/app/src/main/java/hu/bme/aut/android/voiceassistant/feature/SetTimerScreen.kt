@@ -21,6 +21,7 @@ fun SetTimerScreen(message: String = "timer", time: String, onBackPressed: () ->
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
         }
+        onBackPressed()
     }
 
     Button(
