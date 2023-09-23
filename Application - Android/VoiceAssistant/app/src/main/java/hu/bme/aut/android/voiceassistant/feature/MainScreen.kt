@@ -1,9 +1,15 @@
 package hu.bme.aut.android.voiceassistant.feature
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
+import android.media.MediaRecorder
+import android.os.Build
 import android.util.Log
 import hu.bme.aut.android.voiceassistant.domain.api.ApiFunctions
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,12 +44,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import hu.bme.aut.android.voiceassistant.domain.api.ApiClient
+import hu.bme.aut.android.voiceassistant.ui.theme.AppTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,7 +63,36 @@ fun MainScreen(onSendClick: (String) -> Unit) {
     val context = LocalContext.current
     val isProcessing = remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+
+    val isRecording = remember { mutableStateOf(false) }
+    var mediaRecorder: MediaRecorder?
+
+
+    // init
+    mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        MediaRecorder(context)
+    } else {
+        MediaRecorder()
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        val grantedPermissions = permissions.entries.filter { it.value }.map { it.key }
+
+        if (grantedPermissions.contains(Manifest.permission.RECORD_AUDIO) && grantedPermissions.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            mediaRecorder?.apply {
+                setAudioSource(MediaRecorder.AudioSource.MIC)
+                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+                setOutputFile(context.filesDir.path + "/recording.mp4")
+                prepare()
+                start()
+            }
+        } else {
+            // Handle permission denial for RECORD_AUDIO and/or CAMERA
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -108,31 +146,89 @@ fun MainScreen(onSendClick: (String) -> Unit) {
             }
             Spacer(modifier = Modifier.height(200.dp))
 
-             VoiceRecordingScreen()
-            /*                      Button(
-                           modifier = Modifier.size(200.dp),
-                           shape = CircleShape,
-                           elevation = ButtonDefaults.buttonElevation(
-                               defaultElevation = 15.dp,
-                           ),
-                           colors = ButtonDefaults.buttonColors(
-                               containerColor = MaterialTheme.colorScheme.tertiary
-                           ),
-                           onClick = {} //TODO hangfelvétel
-                       ) {
-                           Text(
-                               text = "Voice",
-                               fontSize = 30.sp,
-                               fontWeight = FontWeight.Bold,
-                               textAlign = TextAlign.Center,
-                           )
-                       }*/
+            //VoiceRecordingScreen()
+            Button(
+                modifier = Modifier.size(200.dp),
+                shape = CircleShape,
+                elevation = ButtonDefaults.buttonElevation(
+                    defaultElevation = 15.dp,
+                ),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary
+                ),
+                onClick = {
+
+                    // stop recording
+                    if (isRecording.value) {
+                        mediaRecorder?.apply {
+                            stop()
+                            reset()
+                            release()
+                        }
+                        mediaRecorder = null
+                        // re init
+                        mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                            MediaRecorder(context)
+                        } else {
+                            MediaRecorder()
+                        }
+
+                        isProcessing.value = true
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val response = apiFunctions.interpretVoice(
+                                context.filesDir.path + "/recording.mp4",
+                                "hu"
+                            )
+                            withContext(Dispatchers.Main) {
+                                isProcessing.value = false
+                                handleRoute(response, context, onSendClick)
+                            }
+                            val recordingFile = File(context.filesDir, "recording.mp4")
+                            if (recordingFile.exists()) {
+                                recordingFile.delete()
+                            }
+                        }
+                    } else { // start recording
+                        val permissions = arrayOf(
+                            Manifest.permission.RECORD_AUDIO,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        )
+
+                        val deniedPermissions = permissions.filter {
+                            ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED
+                        }
+
+                        if (deniedPermissions.isEmpty()) {
+                            mediaRecorder?.apply {
+                                setAudioSource(MediaRecorder.AudioSource.MIC)
+                                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+                                setOutputFile(context.filesDir.path + "/recording.mp4")
+                                prepare()
+                                start()
+                            }
+                        } else {
+                            permissionLauncher.launch(permissions)
+                        }
+                    }
+                    isRecording.value = !isRecording.value
+
+
+                }
+            ) {
+                Text(
+                    text = if (isRecording.value) "Stop Recording" else "Start Recording",
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                )
+            }
         }
         if (isProcessing.value) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.White.copy(alpha = 0.75f)),
+                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.75f)),
                 contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
