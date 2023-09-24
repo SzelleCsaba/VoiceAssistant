@@ -1,5 +1,6 @@
 package hu.bme.aut.android.voiceassistant.domain.api
 
+import android.media.MediaPlayer
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -37,6 +38,19 @@ class ApiFunctions(private val apiService: ApiService) {
 
     suspend fun interpretVoice(audioPath: String, lang: String): String? {
         val file = File(audioPath)
+
+        // Check if the audio file is shorter than 1 second
+        val mediaPlayer = MediaPlayer()
+        mediaPlayer.setDataSource(audioPath)
+        mediaPlayer.prepare()
+        val duration = mediaPlayer.duration
+        mediaPlayer.release()
+
+        if (duration < 1000) {
+            return null
+        }
+
+
         val requestBody = file.asRequestBody("audio/*".toMediaTypeOrNull())
         val audioPart = MultipartBody.Part.createFormData("audio", file.name, requestBody)
         val langRequestBody = lang.toRequestBody("text/plain".toMediaTypeOrNull())

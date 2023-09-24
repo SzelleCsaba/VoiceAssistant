@@ -16,6 +16,7 @@ import hu.bme.aut.android.voiceassistant.feature.screens.SendTextScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.SetAlarmScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.SetTimerScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.SettingsScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.ShowAnswerScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.StartCallScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.TakePictureScreen
 
@@ -234,6 +235,20 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             val name = backStackEntry.arguments?.getString("name")
             StartCallScreen(
                 name = name ?: "",
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable(Screen.ShowAnswer.route + "?answer={answer}",
+            arguments = listOf(
+                navArgument("answer") { defaultValue = "answer" }
+            )
+        ) {backStackEntry ->
+            val answer = backStackEntry.arguments?.getString("answer")
+            ShowAnswerScreen(
+                answer ?: "",
                 onBackPressed = {
                     navController.popBackStack()
                 }

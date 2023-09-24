@@ -32,5 +32,7 @@ sealed class Screen(val route: String) {
     object SendText: Screen("send_text")
     object StartCall: Screen("start_call")
 
+    object ShowAnswer: Screen("show_answer")
+
 
 }

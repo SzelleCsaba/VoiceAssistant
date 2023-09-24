@@ -27,7 +27,7 @@ import re
 import csv
 import os
 import logging
-from typing import Union
+from typing import Union, Dict
 from dataclasses import dataclass
 import json
 
@@ -164,7 +164,7 @@ class VectorDb:
             else:   # no params
                 ret.append(Match(dist, self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i]))
         
-        logger.error(["e", str(ret)])
+        #logger.error(["e", str(ret)])
         return ret
 
 
@@ -173,24 +173,30 @@ class TextProcessor:
     def __init__(self, vector_db: VectorDb) -> None:
         self.translation_enabled = config.get("enable_translation")
         self.db = vector_db
-
-        self.translation_cache = Cache('translation_cache.csv')
         self.gpt_run_cache = Cache('gpt_run_cache.csv')
 
         openai.api_key = os.getenv("OPENAI_API_KEY")
 
-    def filter_text(self, text: str) -> Union[str, None]:
+    def filter_text(self, text: str) -> Union[str, None, Dict]:
         original_text = text
+        logger.error(["e", original_text])
+        if len(original_text) < 4:
+            return None
+        
         if self.translation_enabled:
             text = self._translate_gpt(text)
 
         k = 2
         results = self.db.get_top_k_match(text, k)
         max_score = results[0].confidence
-        second_max_score = results[1].confidence
 
         if max_score < 0.33 and (results[0].name != "search_web" or results[1].name != "search_web"):
-            return None
+            answer = self._ask_gpt(original_text)
+            data = {
+                "name": "show_answer",
+                "arguments": "{\n\"answer\": \"" + answer + "\"\n}"
+            }
+            return data
         else:
             matches = []
 
@@ -293,6 +299,28 @@ class TextProcessor:
             return translation
         else:
             return text
+        
+    def _ask_gpt(self, text: str) -> str:
+        prompt = (
+            "You are a voice assistant, so answer like one, on the language that on the prompt is!\n"
+            "Keep your answer short and straightforward!\n"
+            "The prompt: {}"
+        ).format(text)           
+        messages = [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ]
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            temperature=0.8, #TODO test it
+            messages=messages
+        )
+        answer = response['choices'][0]['message']['content']
+        answer = answer.replace('"', '')
+
+        return answer
 
 app = Flask(__name__)
 log_dir = os.path.join(os.path.expanduser("~"), "RestAPI_logs")
