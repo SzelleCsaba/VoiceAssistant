@@ -3,7 +3,7 @@ set_alarm;Set an alarm for 10 o'clock.;Sets an alarm for the given time;time;str
 set_timer;Set a timer for 10 minutes.;Sets a timer for a given period;time;string;1;The given time period in HH:MM:SS format;message;string;0;the message or the name of the reminder
 take_picture;Take a picture or Open camera;opens camera application in picture mode;;;;;;;;
 record_video;Record a video;opens camera application in video mode;;;;;;;;
-search_web;Search for the term on the internet;Searches the web with the given query parameter;query;string;1;The thing to search on the internet;;;;
+search_web;Search for the term something on the internet or web or online;Searches the web with the given query parameter;query;string;1;The thing to search on the internet;;;;
 bluetooth_on;Turn on bluetooth;turns on bluetooth;;;;;;;;
 settings;open the settings;Opens general settings;;;;;;;;
 wifi_settings;open wifi settings;Opens wifi settings;;;;;;;;
@@ -26,3 +26,4 @@ openApplication;Open spotify.;Opens the given app;appName;string;1;The name of t
 getWeather;What's the weather today?;Gets the weather on the given place in the given time;place;string;0;The name of the place;time;string;0;The given date 
 flipCoin;Flip a coin!;Flips a coin either heads or tails;;;;;;;;
 create_note;Remind me to buy groceries ;Creates a note or a reminder;text;string;1;The text of the note;subject;string;0;the subject or the name of the note
+search_web;Search for something on the internet or web or online;Searches the web with the given query parameter;query;string;1;The thing to search on the internet;;;;

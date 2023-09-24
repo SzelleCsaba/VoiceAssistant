@@ -7,17 +7,17 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import hu.bme.aut.android.voiceassistant.feature.BluetoothOnScreen
-import hu.bme.aut.android.voiceassistant.feature.CreateNoteScreen
-import hu.bme.aut.android.voiceassistant.feature.MainScreen
-import hu.bme.aut.android.voiceassistant.feature.RecordVideoScreen
-import hu.bme.aut.android.voiceassistant.feature.SearchWebScreen
-import hu.bme.aut.android.voiceassistant.feature.SendTextScreen
-import hu.bme.aut.android.voiceassistant.feature.SetAlarmScreen
-import hu.bme.aut.android.voiceassistant.feature.SetTimerScreen
-import hu.bme.aut.android.voiceassistant.feature.SettingsScreen
-import hu.bme.aut.android.voiceassistant.feature.StartCallScreen
-import hu.bme.aut.android.voiceassistant.feature.TakePictureScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.BluetoothOnScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.CreateNoteScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.MainScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.RecordVideoScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.SearchWebScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.SendTextScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.SetAlarmScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.SetTimerScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.SettingsScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.StartCallScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.TakePictureScreen
 
 @Composable
 fun NavGraph(navController: NavHostController = rememberNavController()) {
@@ -145,10 +145,6 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             })
         }
 
-
-
-        /* TODO ezeket megcsinálni, mint a többit
-         */
         composable(Screen.LocaleSettings.route) {
             SettingsScreen(Settings.ACTION_LOCALE_SETTINGS ,onBackPressed = {
                 navController.popBackStack()

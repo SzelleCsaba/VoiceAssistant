@@ -1,4 +1,4 @@
-package hu.bme.aut.android.voiceassistant.feature
+package hu.bme.aut.android.voiceassistant.feature.screens
 
 import android.content.Context
 import android.content.Intent

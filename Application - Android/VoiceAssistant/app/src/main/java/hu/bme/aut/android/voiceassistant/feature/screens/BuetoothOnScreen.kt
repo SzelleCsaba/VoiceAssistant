@@ -1,9 +1,10 @@
-package hu.bme.aut.android.voiceassistant.feature
+package hu.bme.aut.android.voiceassistant.feature.screens
 
 import android.Manifest
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,37 +19,33 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 
 @Composable
-fun StartCallScreen(name: String, onBackPressed: () -> Unit) {
+fun BluetoothOnScreen(onBackPressed: () -> Unit) {
     val context = LocalContext.current
+
+    val enableBluetooth = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // Bluetooth is enabled, you can perform Bluetooth operations here
+            Toast.makeText(context, "Bluetooth turned on", Toast.LENGTH_SHORT).show()
+        } else {
+            // Bluetooth enablement failed
+            Toast.makeText(context, "Failed to turn on Bluetooth", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         if (isGranted) {
-            val phoneNumber = getPhoneNumberByName(context, name)
-            if (phoneNumber.isNotEmpty()) {
-                val intent = Intent(Intent.ACTION_DIAL).apply {
-                    data = Uri.parse("tel:$phoneNumber")
-                }
-                if (intent.resolveActivity(context.packageManager) != null) {
-                    context.startActivity(intent)
-                }
-            }
+            val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            enableBluetooth.launch(enableBluetoothIntent)
         } else {
-            Toast.makeText(context, "Permission denied", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Bluetooth permission denied", Toast.LENGTH_SHORT).show()
         }
     }
 
     LaunchedEffect(Unit) {
-        val permission = Manifest.permission.READ_CONTACTS
+        val permission = Manifest.permission.BLUETOOTH
         if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
-            val phoneNumber = getPhoneNumberByName(context, name)
-            if (phoneNumber.isNotEmpty()) {
-                val intent = Intent(Intent.ACTION_DIAL).apply {
-                    data = Uri.parse("tel:$phoneNumber")
-                }
-                if (intent.resolveActivity(context.packageManager) != null) {
-                    context.startActivity(intent)
-                }
-            }
+            val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
+            enableBluetooth.launch(enableBluetoothIntent)
         } else {
             permissionLauncher.launch(permission)
         }
@@ -62,3 +59,5 @@ fun StartCallScreen(name: String, onBackPressed: () -> Unit) {
         Text("Go Back")
     }
 }
+
+

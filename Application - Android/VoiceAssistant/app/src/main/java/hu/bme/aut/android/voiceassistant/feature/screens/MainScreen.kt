@@ -1,4 +1,4 @@
-package hu.bme.aut.android.voiceassistant.feature
+package hu.bme.aut.android.voiceassistant.feature.screens
 
 import android.Manifest
 import android.content.Context
@@ -38,7 +38,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -46,13 +45,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import hu.bme.aut.android.voiceassistant.domain.api.ApiClient
-import hu.bme.aut.android.voiceassistant.ui.theme.AppTheme
+import hu.bme.aut.android.voiceassistant.feature.TextToSpeech
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.File
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,6 +66,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
 
     val isRecording = remember { mutableStateOf(false) }
     var mediaRecorder: MediaRecorder?
+
 
 
     // init
@@ -234,7 +235,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                 CircularProgressIndicator()
             }
         }
-    }
+    } //TODO Toast helyett snackbar üzenetek
 }
 
 private fun handleRoute(response: String?, context: Context, onSendClick: (String) -> Unit) {

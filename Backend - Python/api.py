@@ -163,7 +163,8 @@ class VectorDb:
             
             else:   # no params
                 ret.append(Match(dist, self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i]))
-            
+        
+        logger.error(["e", str(ret)])
         return ret
 
 
@@ -188,7 +189,7 @@ class TextProcessor:
         max_score = results[0].confidence
         second_max_score = results[1].confidence
 
-        if max_score < 0.33 and max_score-second_max_score > 0.2:
+        if max_score < 0.33 and (results[0].name != "search_web" or results[1].name != "search_web"):
             return None
         else:
             matches = []
