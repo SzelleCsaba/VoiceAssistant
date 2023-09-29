@@ -39,11 +39,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import hu.bme.aut.android.voiceassistant.R
 import hu.bme.aut.android.voiceassistant.domain.api.ApiClient
 import hu.bme.aut.android.voiceassistant.feature.TextToSpeech
 import kotlinx.coroutines.CoroutineScope
@@ -63,11 +65,10 @@ fun MainScreen(onSendClick: (String) -> Unit) {
     val context = LocalContext.current
     val isProcessing = remember { mutableStateOf(false) }
 
+    val langCode = stringResource(R.string.language_code)
 
     val isRecording = remember { mutableStateOf(false) }
     var mediaRecorder: MediaRecorder?
-
-
 
     // init
     mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -93,7 +94,9 @@ fun MainScreen(onSendClick: (String) -> Unit) {
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(MaterialTheme.colorScheme.background)) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -121,7 +124,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                     TextField(
                         value = routeText,
                         onValueChange = { routeText = it },
-                        label = { Text("Enter your command") },
+                        label = { Text(stringResource(R.string.enter_command)) },
                         modifier = Modifier.fillMaxWidth(),
                     )
 
@@ -141,13 +144,11 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                             }
                         },
                     ) {
-                        Text("Run")
+                        Text(stringResource(R.string.run))
                     }
                 }
             }
             Spacer(modifier = Modifier.height(200.dp))
-
-            //VoiceRecordingScreen()
             Button(
                 modifier = Modifier.size(200.dp),
                 shape = CircleShape,
@@ -157,8 +158,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.tertiary
                 ),
-                onClick = {
-
+                onClick = { //TODO  google home
                     // stop recording
                     if (isRecording.value) {
                         mediaRecorder?.apply {
@@ -177,9 +177,8 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                         isProcessing.value = true
                         CoroutineScope(Dispatchers.IO).launch {
                             val response = apiFunctions.interpretVoice(
-                                context.filesDir.path + "/recording.mp4",
-                                "hu"
-                            )
+                                context.filesDir.path + "/recording.mp4", langCode)
+
                             withContext(Dispatchers.Main) {
                                 isProcessing.value = false
                                 handleRoute(response, context, onSendClick)
@@ -224,17 +223,20 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = if (isRecording.value) "Stop"  else "Start",
+                        text = if (isRecording.value) stringResource(R.string.stop)  else stringResource(
+                            R.string.start
+                        ),
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
                     )
+                    /*
                     Text(
                         text = "Recording",
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
-                    )
+                    )*/
                 }
             }
         }
@@ -248,7 +250,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                 CircularProgressIndicator()
             }
         }
-    } //TODO Toast helyett snackbar üzenetek
+    }
 }
 
 private fun handleRoute(response: String?, context: Context, onSendClick: (String) -> Unit) {
@@ -268,7 +270,8 @@ private fun handleRoute(response: String?, context: Context, onSendClick: (Strin
 
             while (keys.hasNext()) {
                 val key = keys.next()
-                val value = argumentsJsonObject.getString(key)
+                var value = argumentsJsonObject.getString(key)
+                value = value.replace("\n", " ") // Replace '\n' with ' ' in the value
                 arguments[key] = value
             }
 
@@ -283,14 +286,14 @@ private fun handleRoute(response: String?, context: Context, onSendClick: (Strin
         } else {
             Toast.makeText(
                 context,
-                "There is no function to do it!",
+                context.getString(R.string.no_function_toast),
                 Toast.LENGTH_SHORT
             ).show()
         }
     } else {
         Toast.makeText(
             context,
-            "Something went wrong",
+            context.getString(R.string.error_toast),
             Toast.LENGTH_SHORT
         ).show()
     }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">HangAsszisztens</string>
+    <string name="enter_command">Írja be az utasítást</string>
+    <string name="run">Futtatás</string>
+    <string name="language_code">hu</string>
+    <string name="no_function_toast">Nincs ilyen függvény!</string>
+    <string name="error_toast">Váratlan hiba történt</string>
+    <string name="go_back">Vissza</string>
+    <string name="bluetooth_turned_on">Bluetooth bekapcsolva</string>
+    <string name="failed_to_turn_on_bluetooth">Hiba a bluetooth bekapcsolása közben</string>
+    <string name="permission_denied">Engedély megtagadva</string>
+    <string name="launching_web_search_for">Keresés indítása erre a kifejezésr \'%1$s\'</string>
+    <string name="country_code">HU</string>
+</resources>

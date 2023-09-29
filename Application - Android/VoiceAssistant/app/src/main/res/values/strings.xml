@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">VoiceAssistant</string>
+    <string name="enter_command">Enter command</string>
+    <string name="run">Run</string>
+    <string name="language_code">en</string>
+    <string name="stop" translatable="false">Stop</string>
+    <string name="start" translatable="false">Start</string>
+    <string name="no_function_toast">There is no function to do it!</string>
+    <string name="error_toast">Something went wrong</string>
+    <string name="go_back">Go Back</string>
+    <string name="bluetooth_turned_on">Bluetooth turned on</string>
+    <string name="failed_to_turn_on_bluetooth">Failed to turn on Bluetooth</string>
+    <string name="permission_denied">Permission denied</string>
+    <string name="launching_web_search_for">Launching web search for \'%1$s\'</string>
+    <string name="country_code">US</string>
 </resources>

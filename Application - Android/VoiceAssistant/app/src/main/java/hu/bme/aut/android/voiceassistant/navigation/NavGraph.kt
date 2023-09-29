@@ -2,14 +2,19 @@ package hu.bme.aut.android.voiceassistant.navigation
 
 import android.provider.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import hu.bme.aut.android.voiceassistant.R
+import hu.bme.aut.android.voiceassistant.feature.TextToSpeech
 import hu.bme.aut.android.voiceassistant.feature.screens.BluetoothOnScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.CreateNoteScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.MainScreen
+import hu.bme.aut.android.voiceassistant.feature.screens.PlayMusicScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.RecordVideoScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.SearchWebScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.SendTextScreen
@@ -22,6 +27,12 @@ import hu.bme.aut.android.voiceassistant.feature.screens.TakePictureScreen
 
 @Composable
 fun NavGraph(navController: NavHostController = rememberNavController()) {
+    val langCode = stringResource(R.string.language_code)
+    val countryCode = stringResource(R.string.country_code)
+    val context = LocalContext.current
+
+    val tts = TextToSpeech(context, langCode, countryCode)
+
     NavHost(
         navController = navController,
         startDestination = Screen.Main.route
@@ -241,6 +252,20 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
             )
         }
 
+        composable(Screen.PlayMusic.route + "?query={query}",
+            arguments = listOf(
+                navArgument("query") { defaultValue = "query" }
+            )
+        ) {backStackEntry ->
+            val query = backStackEntry.arguments?.getString("query")
+            PlayMusicScreen(
+                query ?: "",
+                onBackPressed = {
+                    navController.popBackStack()
+                },
+            )
+        }
+
         composable(Screen.ShowAnswer.route + "?answer={answer}",
             arguments = listOf(
                 navArgument("answer") { defaultValue = "answer" }
@@ -251,7 +276,8 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
                 answer ?: "",
                 onBackPressed = {
                     navController.popBackStack()
-                }
+                },
+                tts = tts
             )
         }
 

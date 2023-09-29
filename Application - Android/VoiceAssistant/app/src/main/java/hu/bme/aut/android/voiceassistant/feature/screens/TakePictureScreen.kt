@@ -15,8 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import hu.bme.aut.android.voiceassistant.R
 
 
 @Composable
@@ -32,13 +34,14 @@ fun TakePictureScreen(onBackPressed: () -> Unit) {
             // Handle the failure
         }
     }
+    val permissionDenied = stringResource(R.string.permission_denied)
 
     val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
         if (isGranted) {
             val takePictureIntent = Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA)
             takePicture.launch(takePictureIntent)
         } else {
-            Toast.makeText(context, "Camera permission denied", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, permissionDenied, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -57,6 +60,6 @@ fun TakePictureScreen(onBackPressed: () -> Unit) {
         onClick = onBackPressed,
         modifier = Modifier.padding(16.dp)
     ) {
-        Text("Go Back")
+        Text(stringResource(R.string.go_back))
     }
 }

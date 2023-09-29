@@ -1,5 +1,10 @@
 General Commands:
 
+openApplication	Open spotify.	Opens the given app	appName	string	1	The name of the app				
+getWeather	What's the weather today?	Gets the weather on the given place in the given time	place	string	0	The name of the place	time	string	0	The given date 
+flipCoin	Flip a coin!	Flips a coin either heads or tails								
+to the csv, but taken out for now
+
 
 "Set an alarm for 7 AM."
 "Set a timer for 10 minutes."

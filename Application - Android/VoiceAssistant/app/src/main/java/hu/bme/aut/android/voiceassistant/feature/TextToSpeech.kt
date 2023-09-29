@@ -4,22 +4,25 @@ import android.content.Context
 import android.speech.tts.TextToSpeech
 import java.util.*
 
-class TextToSpeech(private val context: Context) {
+class TextToSpeech(context: Context, private val langCode: String, private val countryCode: String) {
 
     private var textToSpeech: TextToSpeech? = null
+    private var isInitialized = false
+
 
     init {
-        textToSpeech = TextToSpeech(context) { status ->
+        textToSpeech = TextToSpeech(context, { status ->
             if (status != TextToSpeech.ERROR) {
-                textToSpeech?.language = Locale("hu", "HU")
-                //textToSpeech?.speak("szép volt fiam!", TextToSpeech.QUEUE_FLUSH, null, "")
+                textToSpeech?.language = Locale(langCode, countryCode)
+                isInitialized = true
             }
-        }
+        }, "com.google.android.tts")
     }
 
-    // TODO speak failed: not bound to TTS engine
     fun speak(text: String) {
-        textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+        if (isInitialized){
+            textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
+        }
     }
 
     fun shutdown() {

@@ -164,7 +164,6 @@ class VectorDb:
             else:   # no params
                 ret.append(Match(dist, self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i]))
         
-        #logger.error(["e", str(ret)])
         return ret
 
 
@@ -190,7 +189,9 @@ class TextProcessor:
         results = self.db.get_top_k_match(text, k)
         max_score = results[0].confidence
 
-        if max_score < 0.33 and (results[0].name != "search_web" or results[1].name != "search_web"):
+        logger.error(["e", results[0].name])
+        logger.error(["e", results[1].name])
+        if (max_score < 0.33 and results[0].name != "search_web" and results[0].name != "play_music"):
             answer = self._ask_gpt(original_text)
             data = {
                 "name": "show_answer",
@@ -301,26 +302,28 @@ class TextProcessor:
             return text
         
     def _ask_gpt(self, text: str) -> str:
-        prompt = (
-            "You are a voice assistant, so answer like one, on the language that on the prompt is!\n"
-            "Keep your answer short and straightforward!\n"
-            "The prompt: {}"
-        ).format(text)           
+        system_prompt = ("You are a helpful voice assistant, answer on the language that on the prompt is!\n"
+            "Answer in less than 3 sentences, if you can not, then say you cant do it, without refering to languages.\n")          
         messages = [
             {
+                "role": "system",
+                "content": system_prompt
+            },
+            {
                 "role": "user",
-                "content": prompt
+                "content": text
             }
         ]
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            temperature=0.8, #TODO test it
+            temperature=0.8,
             messages=messages
         )
         answer = response['choices'][0]['message']['content']
         answer = answer.replace('"', '')
 
         return answer
+    
 
 app = Flask(__name__)
 log_dir = os.path.join(os.path.expanduser("~"), "RestAPI_logs")
@@ -369,7 +372,15 @@ def interpret_voice():
             audio_file = open(upload_path, "rb")
             # Process the audio data here
             lang = request.form.get('lang', 'en')  # Get the language parameter
-            result = openai.Audio.transcribe("whisper-1", audio_file, language=lang)
+
+            helpwords = ""
+            # Help table for hard commands, different for each language
+            if lang == 'hu':
+                helpwords = "játszd le, keress rá"
+            if lang == 'en':
+                helpwords = "play, search"
+
+            result = openai.Audio.transcribe("whisper-1", audio_file, language=lang, prompt = helpwords)
             text = result["text"]
             text = text.replace('"', '')
             res = tp.filter_text(text)

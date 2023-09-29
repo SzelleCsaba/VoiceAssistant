@@ -8,15 +8,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.actions.NoteIntents
+import hu.bme.aut.android.voiceassistant.R
 
 @Composable
 fun CreateNoteScreen(subject: String = "note", text: String, onBackPressed: () -> Unit) {
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        val intent = createNoteIntent(subject, text)
+        val intent = Intent(NoteIntents.ACTION_CREATE_NOTE).apply {
+            putExtra(NoteIntents.EXTRA_NAME, subject)
+            putExtra(NoteIntents.EXTRA_TEXT, text)
+        }
 
         if (intent.resolveActivity(context.packageManager) != null) {
             context.startActivity(intent)
@@ -28,14 +33,6 @@ fun CreateNoteScreen(subject: String = "note", text: String, onBackPressed: () -
         onClick = onBackPressed,
         modifier = Modifier.padding(16.dp)
     ) {
-        Text("Go Back")
-    }
-}
-// TODO nincs olyan app aminek van ilyen intent filtere
-
-private fun createNoteIntent(subject: String, text: String): Intent {
-    return Intent(NoteIntents.ACTION_CREATE_NOTE).apply {
-        putExtra(NoteIntents.EXTRA_NAME, subject)
-        putExtra(NoteIntents.EXTRA_TEXT, text)
+        Text(stringResource(R.string.go_back))
     }
 }

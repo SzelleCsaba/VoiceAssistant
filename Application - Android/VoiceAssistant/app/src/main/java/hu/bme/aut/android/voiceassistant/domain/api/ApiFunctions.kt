@@ -61,10 +61,8 @@ class ApiFunctions(private val apiService: ApiService) {
                 val response = call.execute()
 
                 if (response.isSuccessful) {
-                    Log.i("api", "sikeres")
                     response.body()?.string()
                 } else {
-                    Log.i("api", "nem sikeres")
                     null
                 }
             } catch (e: IOException) {
