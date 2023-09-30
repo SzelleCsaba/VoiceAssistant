@@ -5,8 +5,6 @@ import android.content.Intent
 import android.os.IBinder
 import android.content.Context
 import android.content.pm.PackageManager
-import android.net.wifi.WifiManager
-
 
 class Functions : Service(){
     override fun onBind(intent: Intent?): IBinder? {
@@ -17,15 +15,7 @@ class Functions : Service(){
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         return super.onStartCommand(intent, flags, startId)
     }
-    /*
-        fun flipCoin() {
-            val random = Random()
-            val result = if (random.nextBoolean()) "Heads" else "Tails"
-            // TODO visualize the result
-        }
 
-*/
-        // TODO nem fog működni, kérdezz rá
         fun startAppByName(context: Context, appName: String) {
             val packageManager: PackageManager = context.packageManager
             val packages = packageManager.getInstalledPackages(PackageManager.MATCH_ALL)

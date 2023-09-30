@@ -2,6 +2,8 @@ package hu.bme.aut.android.voiceassistant.navigation
 
 import android.provider.Settings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
@@ -11,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import hu.bme.aut.android.voiceassistant.R
 import hu.bme.aut.android.voiceassistant.feature.TextToSpeech
+import hu.bme.aut.android.voiceassistant.feature.screens.AddEventScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.BluetoothOnScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.CreateNoteScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.MainScreen
@@ -25,13 +28,18 @@ import hu.bme.aut.android.voiceassistant.feature.screens.ShowAnswerScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.StartCallScreen
 import hu.bme.aut.android.voiceassistant.feature.screens.TakePictureScreen
 
+
+
 @Composable
 fun NavGraph(navController: NavHostController = rememberNavController()) {
     val langCode = stringResource(R.string.language_code)
     val countryCode = stringResource(R.string.country_code)
     val context = LocalContext.current
+    lateinit var tts: TextToSpeech
 
-    val tts = TextToSpeech(context, langCode, countryCode)
+    LaunchedEffect(Unit){
+        tts = TextToSpeech(context, langCode, countryCode)
+    }
 
     NavHost(
         navController = navController,
@@ -278,6 +286,25 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
                     navController.popBackStack()
                 },
                 tts = tts
+            )
+        }
+
+        composable(
+            Screen.AddEvent.route + "?title={title}&date={date}",
+            arguments = listOf(
+                navArgument("title") { defaultValue = "title" },
+                navArgument("date") { defaultValue = "date" }
+            )
+        ) { backStackEntry ->
+            val title = backStackEntry.arguments?.getString("title")
+            val date = backStackEntry.arguments?.getString("date")
+
+            AddEventScreen(
+                title = title ?: "",
+                date = date ?: "",
+                onBackPressed = {
+                    navController.popBackStack()
+                }
             )
         }
 

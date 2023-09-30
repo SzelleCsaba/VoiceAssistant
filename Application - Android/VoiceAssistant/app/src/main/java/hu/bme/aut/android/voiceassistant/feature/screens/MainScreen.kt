@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.media.MediaRecorder
 import android.os.Build
+import android.os.CountDownTimer
 import android.util.Log
 import hu.bme.aut.android.voiceassistant.domain.api.ApiFunctions
 import android.widget.Toast
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,14 +49,12 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import hu.bme.aut.android.voiceassistant.R
 import hu.bme.aut.android.voiceassistant.domain.api.ApiClient
-import hu.bme.aut.android.voiceassistant.feature.TextToSpeech
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.File
-import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -64,9 +64,9 @@ fun MainScreen(onSendClick: (String) -> Unit) {
     val apiFunctions = ApiFunctions(apiService)
     val context = LocalContext.current
     val isProcessing = remember { mutableStateOf(false) }
-
     val langCode = stringResource(R.string.language_code)
-
+    var progress by remember { mutableFloatStateOf(1f) }
+    var countDownTimer: CountDownTimer? = null
     val isRecording = remember { mutableStateOf(false) }
     var mediaRecorder: MediaRecorder?
 
@@ -77,26 +77,27 @@ fun MainScreen(onSendClick: (String) -> Unit) {
         MediaRecorder()
     }
 
-    val permissionLauncher = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
-        val grantedPermissions = permissions.entries.filter { it.value }.map { it.key }
+    val permissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+            val grantedPermissions = permissions.entries.filter { it.value }.map { it.key }
 
-        if (grantedPermissions.contains(Manifest.permission.RECORD_AUDIO) && grantedPermissions.contains(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            mediaRecorder?.apply {
-                setAudioSource(MediaRecorder.AudioSource.MIC)
-                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-                setOutputFile(context.filesDir.path + "/recording.mp4")
-                prepare()
-                start()
+            if (grantedPermissions.contains(Manifest.permission.RECORD_AUDIO) && grantedPermissions.contains(
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
+            ) {
+                startRecording(mediaRecorder!!, context)
+                isRecording.value = true
+
+            } else {
+                // Handle permission denial for RECORD_AUDIO and/or CAMERA
             }
-        } else {
-            // Handle permission denial for RECORD_AUDIO and/or CAMERA
         }
-    }
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.background)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -134,12 +135,14 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
                         onClick = {
-                            isProcessing.value = true
-                            CoroutineScope(Dispatchers.IO).launch {
-                                val response = apiFunctions.interpretText(routeText)
-                                withContext(Dispatchers.Main) {
-                                    isProcessing.value = false
-                                    handleRoute(response, context, onSendClick)
+                            if (routeText.isNotEmpty()) {
+                                isProcessing.value = true
+                                CoroutineScope(Dispatchers.IO).launch {
+                                    val response = apiFunctions.interpretText(routeText)
+                                    withContext(Dispatchers.Main) {
+                                        isProcessing.value = false
+                                        handleRoute(response, context, onSendClick)
+                                    }
                                 }
                             }
                         },
@@ -147,7 +150,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                         Text(stringResource(R.string.run))
                     }
                 }
-            }
+            }//TODO  google home
             Spacer(modifier = Modifier.height(200.dp))
             Button(
                 modifier = Modifier.size(200.dp),
@@ -158,14 +161,12 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.tertiary
                 ),
-                onClick = { //TODO  google home
+                onClick = {
                     // stop recording
                     if (isRecording.value) {
-                        mediaRecorder?.apply {
-                            stop()
-                            reset()
-                            release()
-                        }
+                        stopRecording(mediaRecorder!!)
+
+                        isRecording.value = false
                         mediaRecorder = null
                         // re init
                         mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -177,8 +178,8 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                         isProcessing.value = true
                         CoroutineScope(Dispatchers.IO).launch {
                             val response = apiFunctions.interpretVoice(
-                                context.filesDir.path + "/recording.mp4", langCode)
-
+                                context.filesDir.path + "/recording.mp4", langCode
+                            )
                             withContext(Dispatchers.Main) {
                                 isProcessing.value = false
                                 handleRoute(response, context, onSendClick)
@@ -188,6 +189,10 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                                 recordingFile.delete()
                             }
                         }
+
+                        // Cancel the countdown timer
+                        countDownTimer?.cancel()
+
                     } else { // start recording
                         val permissions = arrayOf(
                             Manifest.permission.RECORD_AUDIO,
@@ -195,48 +200,82 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                         )
 
                         val deniedPermissions = permissions.filter {
-                            ContextCompat.checkSelfPermission(context, it) != PackageManager.PERMISSION_GRANTED
+                            ContextCompat.checkSelfPermission(
+                                context,
+                                it
+                            ) != PackageManager.PERMISSION_GRANTED
                         }
 
                         if (deniedPermissions.isEmpty()) {
-                            mediaRecorder?.apply {
-                                setAudioSource(MediaRecorder.AudioSource.MIC)
-                                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                                setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-                                setOutputFile(context.filesDir.path + "/recording.mp4")
-                                prepare()
-                                start()
-                            }
+                            startRecording(mediaRecorder!!, context)
+                            isRecording.value = true
+
+                            // Start a countdown timer for 10 seconds
+                            countDownTimer = object : CountDownTimer(10000, 10) {
+                                override fun onTick(millisUntilFinished: Long) {
+                                    progress = millisUntilFinished / 10000f
+                                }
+
+                                override fun onFinish() {
+                                    if (isRecording.value) {
+                                        stopRecording(mediaRecorder!!)
+                                        isRecording.value = false
+                                        mediaRecorder = null
+                                        // re init
+                                        mediaRecorder =
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                                MediaRecorder(context)
+                                            } else {
+                                                MediaRecorder()
+                                            }
+
+                                        isProcessing.value = true
+                                        CoroutineScope(Dispatchers.IO).launch {
+                                            val response = apiFunctions.interpretVoice(
+                                                context.filesDir.path + "/recording.mp4", langCode
+                                            )
+
+                                            withContext(Dispatchers.Main) {
+                                                isProcessing.value = false
+                                                handleRoute(response, context, onSendClick)
+                                            }
+                                            val recordingFile =
+                                                File(context.filesDir, "recording.mp4")
+                                            if (recordingFile.exists()) {
+                                                recordingFile.delete()
+                                            }
+                                        }
+                                    }
+                                }
+                            }.start()
                         } else {
                             permissionLauncher.launch(permissions)
                         }
                     }
-                    isRecording.value = !isRecording.value
-
-
                 }
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Box(
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     Text(
-                        text = if (isRecording.value) stringResource(R.string.stop)  else stringResource(
+                        text = if (isRecording.value) stringResource(R.string.stop) else stringResource(
                             R.string.start
                         ),
                         fontSize = 30.sp,
                         fontWeight = FontWeight.Bold,
                         textAlign = TextAlign.Center,
+                        modifier = Modifier.align(Alignment.Center)
                     )
-                    /*
-                    Text(
-                        text = "Recording",
-                        fontSize = 30.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center,
-                    )*/
+                    if (isRecording.value) {
+                        CircularProgressIndicator(
+                            progress = progress,
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .size(150.dp),
+                            strokeWidth = 15.dp,
+                            color = MaterialTheme.colorScheme.onTertiary
+                        )
+                    }
                 }
             }
         }
@@ -299,3 +338,21 @@ private fun handleRoute(response: String?, context: Context, onSendClick: (Strin
     }
 }
 
+private fun startRecording(mediaRecorder: MediaRecorder, context: Context) {
+    mediaRecorder.apply {
+        setAudioSource(MediaRecorder.AudioSource.MIC)
+        setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+        setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+        setOutputFile(context.filesDir.path + "/recording.mp4")
+        prepare()
+        start()
+    }
+}
+
+private fun stopRecording(mediaRecorder: MediaRecorder) {
+    mediaRecorder.apply {
+        stop()
+        reset()
+        release()
+    }
+}

@@ -34,4 +34,6 @@ sealed class Screen(val route: String) {
     object PlayMusic: Screen("play_music")
 
     object ShowAnswer: Screen("show_answer")
+
+    object AddEvent: Screen("add_event")
 }
