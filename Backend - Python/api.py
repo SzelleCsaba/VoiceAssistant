@@ -191,7 +191,7 @@ class TextProcessor:
 
         logger.error(["e", results[0].name])
         logger.error(["e", results[1].name])
-        if (max_score < 0.33 and results[0].name != "search_web" and results[0].name != "play_music"):
+        if (max_score < 0.33 and results[0].name != "search_web" and results[0].name != "play_music" and results[0].name != "send_text"):
             answer = self._ask_gpt(original_text)
             data = {
                 "name": "show_answer",

@@ -21,7 +21,6 @@ fun ShowAnswerScreen(text: String, onBackPressed: () -> Unit, tts: TextToSpeech)
         tts.speak(text)
     }
 
-
     Box(
         modifier = Modifier
             .fillMaxSize()

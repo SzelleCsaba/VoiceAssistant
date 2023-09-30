@@ -33,6 +33,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -69,6 +70,10 @@ fun MainScreen(onSendClick: (String) -> Unit) {
     var countDownTimer: CountDownTimer? = null
     val isRecording = remember { mutableStateOf(false) }
     var mediaRecorder: MediaRecorder?
+    val neededPermissions = arrayOf(
+        Manifest.permission.RECORD_AUDIO,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+    )
 
     // init
     mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -76,22 +81,22 @@ fun MainScreen(onSendClick: (String) -> Unit) {
     } else {
         MediaRecorder()
     }
+    val permissionDenied = stringResource(R.string.permission_denied)
 
     val permissionLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val grantedPermissions = permissions.entries.filter { it.value }.map { it.key }
 
-            if (grantedPermissions.contains(Manifest.permission.RECORD_AUDIO) && grantedPermissions.contains(
+            if (!grantedPermissions.contains(Manifest.permission.RECORD_AUDIO) || !grantedPermissions.contains(
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
             ) {
-                startRecording(mediaRecorder!!, context)
-                isRecording.value = true
-
-            } else {
-                // Handle permission denial for RECORD_AUDIO and/or CAMERA
+                Toast.makeText(context, permissionDenied, Toast.LENGTH_SHORT).show()
             }
         }
+    LaunchedEffect(Unit){
+        permissionLauncher.launch(neededPermissions)
+    }
 
     Box(
         modifier = Modifier
@@ -127,6 +132,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                         onValueChange = { routeText = it },
                         label = { Text(stringResource(R.string.enter_command)) },
                         modifier = Modifier.fillMaxWidth(),
+                        enabled = !isProcessing.value,
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -134,6 +140,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                     Button(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(10.dp),
+                        enabled = !isProcessing.value,
                         onClick = {
                             if (routeText.isNotEmpty()) {
                                 isProcessing.value = true
@@ -161,6 +168,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.tertiary
                 ),
+                enabled = !isProcessing.value,
                 onClick = {
                     // stop recording
                     if (isRecording.value) {
@@ -194,18 +202,12 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                         countDownTimer?.cancel()
 
                     } else { // start recording
-                        val permissions = arrayOf(
-                            Manifest.permission.RECORD_AUDIO,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        )
-
-                        val deniedPermissions = permissions.filter {
+                        val deniedPermissions = neededPermissions.filter {
                             ContextCompat.checkSelfPermission(
                                 context,
                                 it
                             ) != PackageManager.PERMISSION_GRANTED
                         }
-
                         if (deniedPermissions.isEmpty()) {
                             startRecording(mediaRecorder!!, context)
                             isRecording.value = true
@@ -248,8 +250,6 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                                     }
                                 }
                             }.start()
-                        } else {
-                            permissionLauncher.launch(permissions)
                         }
                     }
                 }
