@@ -272,7 +272,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .size(150.dp),
-                            strokeWidth = 15.dp,
+                            strokeWidth = 10.dp,
                             color = MaterialTheme.colorScheme.onTertiary
                         )
                     }

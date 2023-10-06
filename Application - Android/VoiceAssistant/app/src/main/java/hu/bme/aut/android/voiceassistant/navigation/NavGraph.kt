@@ -1,9 +1,11 @@
 package hu.bme.aut.android.voiceassistant.navigation
 
 import android.provider.Settings
+import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
@@ -43,7 +45,8 @@ fun NavGraph(navController: NavHostController = rememberNavController()) {
 
     NavHost(
         navController = navController,
-        startDestination = Screen.Main.route
+        startDestination = Screen.Main.route,
+        modifier = Modifier.background(MaterialTheme.colorScheme.background)
     ) {
         composable(Screen.Main.route) {
             MainScreen { route ->

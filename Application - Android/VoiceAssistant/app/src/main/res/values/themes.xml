@@ -2,4 +2,10 @@
 <resources>
 
     <style name="Theme.VoiceAssistant" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <style name="Theme.VoiceAssistant.MySplash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#FF006590</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="postSplashScreenTheme">@style/Theme.VoiceAssistant</item>
+    </style>
 </resources>
