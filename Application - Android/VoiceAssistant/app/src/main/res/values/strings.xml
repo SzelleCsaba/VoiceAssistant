@@ -13,4 +13,5 @@
     <string name="permission_denied">Permission denied</string>
     <string name="launching_web_search_for">Launching web search for \'%1$s\'</string>
     <string name="country_code">US</string>
+    <string name="this_task_cannot_be_done">This task cannot be done!</string>
 </resources>

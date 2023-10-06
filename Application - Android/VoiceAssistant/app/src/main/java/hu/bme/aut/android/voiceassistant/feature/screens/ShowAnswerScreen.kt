@@ -10,15 +10,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import hu.bme.aut.android.voiceassistant.R
 import hu.bme.aut.android.voiceassistant.feature.TextToSpeech
 
 @Composable
 fun ShowAnswerScreen(text: String, onBackPressed: () -> Unit, tts: TextToSpeech) {
+    var displayText = text
+    val errorText = stringResource(R.string.this_task_cannot_be_done)
     LaunchedEffect(Unit) {
-        tts.speak(text)
+        if (displayText == "None")
+            displayText = errorText
+        tts.speak(displayText)
     }
 
     Box(
@@ -29,7 +35,7 @@ fun ShowAnswerScreen(text: String, onBackPressed: () -> Unit, tts: TextToSpeech)
             .padding(15.dp)
     ) {
         Text(
-            text = text,
+            text = displayText,
             fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
             lineHeight = 35.sp,

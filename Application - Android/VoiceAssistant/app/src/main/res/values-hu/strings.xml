@@ -12,4 +12,5 @@
     <string name="permission_denied">Engedély megtagadva</string>
     <string name="launching_web_search_for">Keresés indítása erre a kifejezésr \'%1$s\'</string>
     <string name="country_code">HU</string>
+    <string name="this_task_cannot_be_done">Nem lehet végrehajtani ezt a műveletet!</string>
 </resources>

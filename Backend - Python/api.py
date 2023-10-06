@@ -178,7 +178,7 @@ class TextProcessor:
 
     def filter_text(self, text: str) -> Union[str, None, Dict]:
         original_text = text
-        logger.error(["e", original_text])
+        #logger.error(["e", original_text])
         if len(original_text) < 4:
             return None
         
@@ -189,9 +189,7 @@ class TextProcessor:
         results = self.db.get_top_k_match(text, k)
         max_score = results[0].confidence
 
-        logger.error(["e", results[0].name])
-        logger.error(["e", results[1].name])
-        if (max_score < 0.33 and results[0].name != "search_web" and results[0].name != "play_music" and results[0].name != "send_text"):
+        if (max_score < 0.33 and results[0].name != "search_web" and results[0].name != "play_music"):
             answer = self._ask_gpt(original_text)
             data = {
                 "name": "show_answer",
@@ -204,7 +202,17 @@ class TextProcessor:
             for match in results:
                 matches.append(match)  # Store the entire Match object
 
-            return self._process_text_gpt(text, matches, original_text)
+            res = self._process_text_gpt(text, matches, original_text)
+
+            if res:
+                return res
+
+            else:
+                data = {
+                    "name": "show_answer",
+                    "arguments": "{\n\"answer\": \"None\"\n}"
+                }
+                return data
 
     def _process_text_gpt(self, prompt: str, matches: list[Match], original_prompt: str) -> Union[str, None]:
         if prompt == "":
