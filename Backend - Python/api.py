@@ -126,8 +126,8 @@ class VectorDb:
         # 'd' is the dimensionality of the vectors
         d = len(df["Embedding"][0])
 
-        # Euclidian distance - faiss.IndexFlatL2(d)
-        # Euclidian cosine - faiss.IndexFlatIP(d) + normalization
+        # Euclidean distance - faiss.IndexFlatL2(d)
+        # Euclidean cosine - faiss.IndexFlatIP(d) + normalization
         index = faiss.IndexFlatIP(d)
 
         vectors = np.array(list(df["Embedding"].to_numpy()), dtype=np.float32)
