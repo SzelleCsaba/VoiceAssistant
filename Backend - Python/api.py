@@ -178,7 +178,6 @@ class TextProcessor:
 
     def filter_text(self, text: str) -> Union[str, None, Dict]:
         original_text = text
-        #logger.error(["e", original_text])
         if len(original_text) < 4:
             return None
         
@@ -197,12 +196,7 @@ class TextProcessor:
             }
             return data
         else:
-            matches = []
-
-            for match in results:
-                matches.append(match)  # Store the entire Match object
-
-            res = self._process_text_gpt(text, matches, original_text)
+            res = self._process_text_gpt(text, results, original_text)
 
             if res:
                 return res
