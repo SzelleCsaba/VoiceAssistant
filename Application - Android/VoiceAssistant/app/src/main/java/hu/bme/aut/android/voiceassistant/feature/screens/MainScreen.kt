@@ -7,7 +7,6 @@ import android.media.MediaRecorder
 import android.os.Build
 import android.os.CountDownTimer
 import android.util.Log
-import hu.bme.aut.android.voiceassistant.domain.api.ApiFunctions
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -50,12 +49,15 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import hu.bme.aut.android.voiceassistant.R
 import hu.bme.aut.android.voiceassistant.domain.api.ApiClient
+import hu.bme.aut.android.voiceassistant.domain.api.ApiFunctions
+import hu.bme.aut.android.voiceassistant.feature.NetflixIntentLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.io.File
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -157,7 +159,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                         Text(stringResource(R.string.run))
                     }
                 }
-            }//TODO  google home
+            }
             Spacer(modifier = Modifier.height(200.dp))
             Button(
                 modifier = Modifier.size(200.dp),
@@ -279,6 +281,8 @@ fun MainScreen(onSendClick: (String) -> Unit) {
                 }
             }
         }
+        //val nIL = NetflixIntentLauncher("70028883", onBackPressed = {})
+        //nIL.launchIntent()
         if (isProcessing.value) {
             Box(
                 modifier = Modifier

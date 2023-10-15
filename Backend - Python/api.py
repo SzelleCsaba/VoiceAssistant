@@ -274,10 +274,6 @@ class TextProcessor:
         return None
 
     def _translate_gpt(self, text: str) -> str:
-        # safety net to not translate things that are too short and dont make any sense
-        if len(text) < 4:
-            return text
-
         if detect(text) != 'en':
             prompt = (
                 "Translate "
