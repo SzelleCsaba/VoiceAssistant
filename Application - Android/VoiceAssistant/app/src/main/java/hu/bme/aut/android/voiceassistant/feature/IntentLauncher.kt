@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import hu.bme.aut.android.voiceassistant.R
 
-abstract class IntentLauncher(val intentData: String, val onBackPressed: () -> Unit) {
+abstract class IntentLauncher(val intentData: String = "", val onBackPressed: () -> Unit) {
     protected abstract val intent: Intent
 
     @Composable
