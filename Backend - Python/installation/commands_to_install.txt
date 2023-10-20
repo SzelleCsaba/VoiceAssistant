@@ -1,0 +1,5 @@
+conda create -n virtualassistant python=3.9.13
+conda activate virtualassistant
+conda install pip
+pip install -r requirements.txt
+python run_server.py
