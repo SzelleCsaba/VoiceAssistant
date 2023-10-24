@@ -40,8 +40,10 @@ fun SendTextScreen(name: String, message: String, onBackPressed: () -> Unit) {
                     context.startActivity(intent)
                 }
             }
+            onBackPressed()
         } else {
             Toast.makeText(context, permissionDenied, Toast.LENGTH_SHORT).show()
+            onBackPressed()
         }
     }
 
@@ -58,10 +60,10 @@ fun SendTextScreen(name: String, message: String, onBackPressed: () -> Unit) {
                     context.startActivity(intent)
                 }
             }
+            onBackPressed()
         } else {
             permissionLauncher.launch(permission)
         }
-        onBackPressed()
     }
 
     Button(

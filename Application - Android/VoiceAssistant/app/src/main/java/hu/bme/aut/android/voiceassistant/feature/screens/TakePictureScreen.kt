@@ -40,9 +40,12 @@ fun TakePictureScreen(onBackPressed: () -> Unit) {
         if (isGranted) {
             val takePictureIntent = Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA)
             takePicture.launch(takePictureIntent)
+            onBackPressed()
         } else {
             Toast.makeText(context, permissionDenied, Toast.LENGTH_SHORT).show()
+            onBackPressed()
         }
+
     }
 
     LaunchedEffect(Unit) {
@@ -50,10 +53,10 @@ fun TakePictureScreen(onBackPressed: () -> Unit) {
         if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
             val takePictureIntent = Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA)
             takePicture.launch(takePictureIntent)
+            onBackPressed()
         } else {
             permissionLauncher.launch(permission)
         }
-        onBackPressed()
     }
 
     Button(
