@@ -50,7 +50,6 @@ import androidx.core.content.ContextCompat
 import hu.bme.aut.android.voiceassistant.R
 import hu.bme.aut.android.voiceassistant.domain.api.ApiClient
 import hu.bme.aut.android.voiceassistant.domain.api.ApiFunctions
-import hu.bme.aut.android.voiceassistant.feature.NetflixIntentLauncher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -73,8 +72,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
     val isRecording = remember { mutableStateOf(false) }
     var mediaRecorder: MediaRecorder?
     val neededPermissions = arrayOf(
-        Manifest.permission.RECORD_AUDIO,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
+        Manifest.permission.RECORD_AUDIO
     )
 
     // init
@@ -89,9 +87,7 @@ fun MainScreen(onSendClick: (String) -> Unit) {
         rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
             val grantedPermissions = permissions.entries.filter { it.value }.map { it.key }
 
-            if (!grantedPermissions.contains(Manifest.permission.RECORD_AUDIO) || !grantedPermissions.contains(
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
+            if (!grantedPermissions.contains(Manifest.permission.RECORD_AUDIO)
             ) {
                 Toast.makeText(context, permissionDenied, Toast.LENGTH_SHORT).show()
             }
@@ -187,14 +183,17 @@ fun MainScreen(onSendClick: (String) -> Unit) {
 
                         isProcessing.value = true
                         CoroutineScope(Dispatchers.IO).launch {
+                            val recordingFile = File(context.filesDir, "recording.mp4")
                             val response = apiFunctions.interpretVoice(
-                                context.filesDir.path + "/recording.mp4", langCode
+                                context,
+                                recordingFile.absolutePath,
+                                langCode
                             )
                             withContext(Dispatchers.Main) {
                                 isProcessing.value = false
                                 handleRoute(response, context, onSendClick)
                             }
-                            val recordingFile = File(context.filesDir, "recording.mp4")
+
                             if (recordingFile.exists()) {
                                 recordingFile.delete()
                             }
@@ -235,16 +234,17 @@ fun MainScreen(onSendClick: (String) -> Unit) {
 
                                         isProcessing.value = true
                                         CoroutineScope(Dispatchers.IO).launch {
+                                            val recordingFile = File(context.filesDir, "recording.mp4")
                                             val response = apiFunctions.interpretVoice(
-                                                context.filesDir.path + "/recording.mp4", langCode
+                                                context,
+                                                recordingFile.absolutePath,
+                                                langCode
                                             )
 
                                             withContext(Dispatchers.Main) {
                                                 isProcessing.value = false
                                                 handleRoute(response, context, onSendClick)
                                             }
-                                            val recordingFile =
-                                                File(context.filesDir, "recording.mp4")
                                             if (recordingFile.exists()) {
                                                 recordingFile.delete()
                                             }
@@ -347,7 +347,8 @@ private fun startRecording(mediaRecorder: MediaRecorder, context: Context) {
         setAudioSource(MediaRecorder.AudioSource.MIC)
         setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
         setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-        setOutputFile(context.filesDir.path + "/recording.mp4")
+        val recordingPath = File(context.filesDir, "recording.mp4").absolutePath
+        mediaRecorder.setOutputFile(recordingPath)
         prepare()
         start()
     }

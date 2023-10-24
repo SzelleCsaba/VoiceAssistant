@@ -41,8 +41,10 @@ fun BluetoothOnScreen(onBackPressed: () -> Unit) {
         if (isGranted) {
             val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             enableBluetooth.launch(enableBluetoothIntent)
+            onBackPressed()
         } else {
             Toast.makeText(context, permissionDenied, Toast.LENGTH_SHORT).show()
+            onBackPressed()
         }
     }
 
@@ -51,10 +53,11 @@ fun BluetoothOnScreen(onBackPressed: () -> Unit) {
         if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
             val enableBluetoothIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             enableBluetooth.launch(enableBluetoothIntent)
+            onBackPressed()
         } else {
             permissionLauncher.launch(permission)
         }
-        onBackPressed()
+
     }
 
     Button(

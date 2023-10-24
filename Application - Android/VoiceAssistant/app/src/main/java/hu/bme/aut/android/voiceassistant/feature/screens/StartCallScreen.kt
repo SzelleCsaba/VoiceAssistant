@@ -35,8 +35,10 @@ fun StartCallScreen(name: String, onBackPressed: () -> Unit) {
                     context.startActivity(intent)
                 }
             }
+            onBackPressed()
         } else {
             Toast.makeText(context, permissionDenied, Toast.LENGTH_SHORT).show()
+            onBackPressed()
         }
     }
 
@@ -52,10 +54,11 @@ fun StartCallScreen(name: String, onBackPressed: () -> Unit) {
                     context.startActivity(intent)
                 }
             }
+            onBackPressed()
         } else {
             permissionLauncher.launch(permission)
         }
-        onBackPressed()
+
     }
 
     Button(

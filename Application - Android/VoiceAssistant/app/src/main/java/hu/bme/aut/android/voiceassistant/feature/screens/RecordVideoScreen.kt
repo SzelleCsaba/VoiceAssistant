@@ -40,8 +40,10 @@ fun RecordVideoScreen(onBackPressed: () -> Unit) {
         if (isGranted) {
             val recordVideoIntent = Intent(MediaStore.INTENT_ACTION_VIDEO_CAMERA)
             recordVideo.launch(recordVideoIntent)
+            onBackPressed()
         } else {
             Toast.makeText(context, permissionDenied, Toast.LENGTH_SHORT).show()
+            onBackPressed()
         }
     }
 
@@ -50,10 +52,11 @@ fun RecordVideoScreen(onBackPressed: () -> Unit) {
         if (ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED) {
             val recordVideoIntent = Intent(MediaStore.INTENT_ACTION_VIDEO_CAMERA)
             recordVideo.launch(recordVideoIntent)
+            onBackPressed()
         } else {
             permissionLauncher.launch(permission)
         }
-        onBackPressed()
+
     }
 
     Button(
