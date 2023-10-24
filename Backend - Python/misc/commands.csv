@@ -1,31 +1,32 @@
-Name;Example;Description;Param1;Param1Type;Param1Required;Param1Description;Param2;Param2Type;Param2Required;Param2Description;Alternative
-set_alarm;set an alarm for 10 oclock;Sets an alarm for the given time;time;string;1.0;The given time in HH:MM 24H format;message;string;0.0;the message or the name of the alarm;0
-set_timer;set a timer for 10 minutes;Sets a timer for a given period;time;string;1.0;The given time period in HH:MM:SS format;message;string;0.0;the message or the name of the reminder;0
-take_picture;take a picture or open camera;opens camera application in picture mode;;;;;;;;;0
-record_video;record a video;opens camera application in video mode;;;;;;;;;0
-search_web;search for the term something on the internet or web or online;Searches the web with the given query parameter;query;string;1.0;The thing to search on the internet;;;;;0
-bluetooth_on;turn on bluetooth;turns on bluetooth;;;;;;;;;0
-settings;open the settings;Opens general settings;;;;;;;;;0
-wifi_settings;open wifi settings;Opens wifi settings;;;;;;;;;0
-wireless_settings;open wireless settings;Opens wireless settings;;;;;;;;;0
-airplane_settings;open airplane mode settings;Opens airplane mode settings;;;;;;;;;0
-apn_settings;open apn settings;opens apn settings;;;;;;;;;0
-bluetooth_settings;open bluetooth settings;Opens bluetooth settings;;;;;;;;;0
-date_settings;open date settings;opens date settings;;;;;;;;;0
-locale_settings;open locale settings;Opens locale settings;;;;;;;;;0
-input_settings;open input settings;Opens input method settings;;;;;;;;;0
-display_settings;open display settings;Opens display settings;;;;;;;;;0
-security_settings;open security settings;Opens security settings;;;;;;;;;0
-location_settings;open location settings;opens location source settings;;;;;;;;;0
-internalstorage_settings;open internal storage settings;Opens internal storage settings;;;;;;;;;0
-memorycard_settings;open memory card settings;opens memory card settings;;;;;;;;;0
-create_note;create a note to something;Creates a note or a reminder;text;string;1.0;The text of the note;subject;string;0.0;the subject or the name of the note;0
-add_event;add an event to my calendar on the 5th of august;Adds an event on the name title to the calendar;title;string;0.0;The title for the calendar event;date;string;1.0;the start date of the event in MM.dd. format;0
-start_call;call someone;Starts a call with the given person;name;string;1.0;The name of the given person;;;;;0
-send_text;send a text to someone;Sends a text to a person;name;string;1.0;The name of the given person;message;string;1.0;The message;0
-play_music;play bohemian rhapsody from queen;Plays a music based on a search query;query;string;1.0;The query, it can be a name or a music, or both;;;;;0
-create_note;remind me to something;Creates a note or a reminder;text;string;1.0;The text of the note;subject;string;0.0;the subject or the name of the note;0
-search_web;search for something on the internet or web or online;Searches the web with the given query parameter;query;string;1.0;The thing to search on the internet;;;;;0
-play_music;play the music named bohemian rhapsody;Plays a music based on a search query;query;string;1.0;The query, it can be a name or a music, or both;;;;;0
-play_music;play track title;Plays a music based on a search query;query;string;1.0;The query, it can be a name or a music, or both;;;;;0
-start_call;start a call with someone;Starts a call with the given person;name;string;1.0;The name of the given person;;;;;0
+Name;Example;Description;Param1;Param1Type;Param1Required;Param1Description;Param2;Param2Type;Param2Required;Param2Description
+set_alarm;Set an alarm for 10 o'clock.;Sets an alarm for the given time;time;string;1;The given time in HH:MM 24H format;message;string;0;the message or the name of the alarm
+set_timer;Set a timer for 10 minutes.;Sets a timer for a given period;time;string;1;The given time period in HH:MM:SS format;message;string;0;the message or the name of the reminder
+take_picture;Take a picture or Open camera;opens camera application in picture mode;;;;;;;;
+record_video;Record a video;opens camera application in video mode;;;;;;;;
+search_web;Search for the term something on the internet or web or online;Searches the web with the given query parameter;query;string;1;The thing to search on the internet;;;;
+bluetooth_on;Turn on bluetooth;turns on bluetooth;;;;;;;;
+settings;open the settings;Opens general settings;;;;;;;;
+wifi_settings;open wifi settings;Opens wifi settings;;;;;;;;
+wireless_settings;open wireless settings;Opens wireless settings;;;;;;;;
+airplane_settings;open airplane mode settings;Opens airplane mode settings;;;;;;;;
+apn_settings;open apn settings;opens apn settings;;;;;;;;
+bluetooth_settings;open bluetooth settings;Opens bluetooth settings;;;;;;;;
+date_settings;open date settings;opens date settings;;;;;;;;
+locale_settings;open locale settings;Opens locale settings;;;;;;;;
+input_settings;open input settings;Opens input method settings;;;;;;;;
+display_settings;open display settings;Opens display settings;;;;;;;;
+security_settings;open security settings;Opens security settings;;;;;;;;
+location_settings;open location settings;opens location source settings;;;;;;;;
+internalstorage_settings;open internal storage settings;Opens internal storage settings;;;;;;;;
+memorycard_settings;open memory card settings;opens memory card settings;;;;;;;;
+create_note;Create a note to something;Creates a note or a reminder;text;string;1;The text of the note;subject;string;0;the subject or the name of the note
+add_event;Add an event to my calendar on the 5th of august;Adds an event on the name title to the calendar;title;string;0;The title for the calendar event;date;string;1;the start date of the event in MM.dd. format
+start_call;Call someone.;Starts a call with the given person;name;string;1;The name of the given person;;;;
+send_text;Send a text to someone.;Sends a text to a person;name;string;1;The name of the given person;message;string;1;The message
+play_music;play bohemian rhapsody from queen;Plays a music based on a search query;query;string;1;The query, it can be a name or a music, or both;;;;
+create_note;Remind me to something;Creates a note or a reminder;text;string;1;The text of the note;subject;string;0;the subject or the name of the note
+search_web;Search for something on the internet or web or online;Searches the web with the given query parameter;query;string;1;The thing to search on the internet;;;;
+play_music;play the music named bohemian rhapsody;Plays a music based on a search query;query;string;1;The query, it can be a name or a music, or both;;;;
+play_music;play track title;Plays a music based on a search query;query;string;1;The query, it can be a name or a music, or both;;;;
+start_call;Start a call with someone.;Starts a call with the given person;name;string;1;The name of the given person;;;;
+send_text;Write a message to someone.;Sends a text to a person;name;string;1;The name of the given person;message;string;1;The message
