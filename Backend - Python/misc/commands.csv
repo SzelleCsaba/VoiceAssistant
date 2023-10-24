@@ -29,3 +29,4 @@ search_web;Search for something on the internet or web or online;Searches the we
 play_music;play the music named bohemian rhapsody;Plays a music based on a search query;query;string;1;The query, it can be a name or a music, or both;;;;
 play_music;play track title;Plays a music based on a search query;query;string;1;The query, it can be a name or a music, or both;;;;
 start_call;Start a call with someone.;Starts a call with the given person;name;string;1;The name of the given person;;;;
+send_text;Write a message to someone.;Sends a text to a person;name;string;1;The name of the given person;message;string;1;The message
