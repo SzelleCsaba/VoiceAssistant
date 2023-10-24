@@ -143,91 +143,7 @@ class VectorDb:
         return embedding
     
     
-    def add_item(self, name: str, example: str) -> bool:
-        try:
-            # Search for the name in the DataFrame
-            existing = self.data.loc[(self.data['Name'] == name) & (self.data['Alternative'] == 0)]
-
-            # If no match found, return False
-            if existing.empty:
-                return False
-
-            # If there are more matching, use the first occurrence
-            existing = existing.iloc[0]
-
-            # Create a new row with the given example and copied data
-            new_row = existing.copy()
-            new_row['Example'] = example
-            new_row['Description'] = new_row['Description'] + " Could be also refered as: " + example
-
-            new_row['Alternative'] = 1
-
-            # Add the new row to the DataFrame
-            self.data = pd.concat([self.data, pd.DataFrame([new_row])], ignore_index=True)
-
-            # Save the new DataFrame to the CSV
-            data_path = f"{os.path.join(app_folder,self.config.get('command_data_path'))}.csv"
-            self.data.to_csv(data_path, index=False, sep=';', columns=['Name', 'Example', 'Description', 'Param1', 'Param1Type', 'Param1Required', 'Param1Description', 'Param2', 'Param2Type', 'Param2Required', 'Param2Description', 'Alternative'])
-
-            # Rebuild the index with the updated data
-            self._build_index()
-
-            # Reload the DataFrame and the index
-            self.data = pd.read_csv(data_path, header=0, sep=';')
-            self.index = faiss.read_index(self.index_path)
-
-            # Return True if the operation is successful
-            return True
-
-        except Exception as e:
-            logger.critical(["t", "error", e])
-            return False
-
-    def delete_item(self, name: str, example: str) -> bool:
-        try:
-            # Get indices of rows with matching name and example
-            indices = self.data[(self.data['Name'] == name) & (self.data['Example'] == example) & (self.data['Alternative'] == 1)].index
-
-            # If no match found, return False
-            if len(indices) == 0:
-                return False
-
-            # Drop these row indices from DataFrame
-            self.data.drop(indices, inplace=True)
-
-            # Update the CSV file
-            data_path = f"{os.path.join(app_folder,self.config.get('command_data_path'))}.csv"
-            self.data.to_csv(data_path, index=False, sep=';', columns=['Name', 'Example', 'Description', 'Param1', 'Param1Type', 'Param1Required', 'Param1Description', 'Param2', 'Param2Type', 'Param2Required', 'Param2Description', 'Alternative'])
-
-            # Rebuild the index
-            self._build_index()
-
-            # Reload the DataFrame and the index
-            self.data = pd.read_csv(data_path, header=0, sep=';')
-            self.index = faiss.read_index(self.index_path)
-
-            # Return True if the operation is successful
-            return True
-
-        except Exception as e:
-            logger.critical(["t", "error", e])
-            return False
-
-    def get_items(self):
-        try:
-            # Filter the DataFrame to get rows where Alternative is 1
-            filtered_data = self.data[self.data['Alternative'] == 1]
-
-            # Extract the Name and Example columns from the filtered data
-            names = filtered_data['Name'].tolist()
-            examples = filtered_data['Example'].tolist()
-
-            # Return a list of tuples containing the Name and Example values
-            return list(zip(names, examples))
-
-        except Exception as e:
-            return []
-
+    
     def get_top_k_match(self, text: str, k: int = 10) -> list[Match]:
         embedding = self._text_to_embedding(text)
         distances, indices = self.index.search(
@@ -251,9 +167,7 @@ class VectorDb:
                 ret.append(Match(dist, self.data["Example"][i],  self.data["Name"][i], self.data["Description"][i]))
         
         return ret
-
-
-
+    
 class TextProcessor:
     def __init__(self, vector_db: VectorDb) -> None:
         self.translation_enabled = config.get("enable_translation")
@@ -266,6 +180,11 @@ class TextProcessor:
         original_text = text
         if len(original_text) < 4:
             return None
+        
+        # Check the cache first
+        cached_response = self.gpt_run_cache.get(original_text)
+        if cached_response:
+            return cached_response
         
         if self.translation_enabled:
             text = self.translate_gpt(text)
@@ -297,11 +216,6 @@ class TextProcessor:
     def _process_text_gpt(self, prompt: str, matches: list[Match], original_prompt: str) -> Union[str, None]:
         if prompt == "":
             return None
-        
-        # Check the cache first
-        cached_response = self.gpt_run_cache.get(original_prompt)
-        if cached_response:
-            return cached_response
 
         functions = []
 
@@ -427,39 +341,6 @@ logger.setLevel(logging.ERROR)
 app_folder = r"C:\Users\szcsa\Documents\GitHub\SzakDoga\Backend - Python\misc" 
 vdb = VectorDb(app_folder)
 tp = TextProcessor(vdb)
-
-
-@app.route('/getcommands', methods=['GET'])
-def get_commands():
-    res = tp.db.get_items()
-
-    return jsonify(res)
-
-@app.route('/addcommand', methods=['PUT'])
-def add_command():
-    function = request.json.get('function')
-    command = request.json.get('command')
-
-    command = tp.translate_gpt(command)
-    success = tp.db.add_item(function, command)
-
-    if success:
-        return 'OK', 200
-    else:
-        return 'Error', 400
-
-@app.route('/deletecommand', methods=['DELETE'])
-def delete_command():
-    function = request.json.get('function')
-    command = request.json.get('command')
-
-    command = tp.translate_gpt(command)
-    success = tp.db.delete_item(function, command)
-
-    if success:
-        return 'OK', 200
-    else:
-        return 'Error', 400
 
 @app.route('/text', methods=['POST'])
 def interpret_text():
