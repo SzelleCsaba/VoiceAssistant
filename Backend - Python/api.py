@@ -267,6 +267,11 @@ class TextProcessor:
         if len(original_text) < 4:
             return None
         
+        # Check the cache first
+        cached_response = self.gpt_run_cache.get(original_text)
+        if cached_response:
+            return cached_response
+        
         if self.translation_enabled:
             text = self.translate_gpt(text)
 
@@ -297,11 +302,6 @@ class TextProcessor:
     def _process_text_gpt(self, prompt: str, matches: list[Match], original_prompt: str) -> Union[str, None]:
         if prompt == "":
             return None
-        
-        # Check the cache first
-        cached_response = self.gpt_run_cache.get(original_prompt)
-        if cached_response:
-            return cached_response
 
         functions = []
 
