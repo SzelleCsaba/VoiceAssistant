@@ -1,28 +1,5 @@
 # -*- coding: utf-8 -*-
 
-def install_dependencies() -> None:
-    import subprocess
-    import pkg_resources
-
-    required_dependencies = [
-        "faiss-cpu",
-        "openai",
-        "numpy",
-        "pandas",
-        "langdetect",
-        "flask",
-        "sentence-transformers",
-    ]
-
-    installed_packages = {pkg.key for pkg in pkg_resources.working_set}
-    missing_dependencies = [dep for dep in required_dependencies if dep not in installed_packages]
-
-    if missing_dependencies:
-        for dependency in missing_dependencies:
-            subprocess.check_call(['pip', 'install', dependency])
-
-install_dependencies()
-
 import re
 import csv
 import os
