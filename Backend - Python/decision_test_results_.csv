@@ -1,0 +1,3 @@
+Prompt,Expected result,Actual result
+Nyisd meg a beállításokat,True,True
+Mit vegyek fel 16 fokban,False,False

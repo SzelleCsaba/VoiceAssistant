@@ -1,0 +1,2 @@
+Prompt,Expected command,Actual command,Answer
+állíts be egy 5 perces időzítőt,set_timer,set_timer,Beállítok egy 5 perces időzítőt.
