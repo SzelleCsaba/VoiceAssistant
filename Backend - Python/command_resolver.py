@@ -38,7 +38,7 @@ class CommandResolver:
     if os.path.exists(faiss_index_path):
         print("FAISS index found. Loading the index from file.")
         # Load the FAISS index from the file
-        db = FAISS.load_local(faiss_index_path, embeddings, embeddings,allow_dangerous_deserialization=True)
+        db = FAISS.load_local(faiss_index_path, embeddings, allow_dangerous_deserialization=True)
     else:
         print("FAISS index not found. Creating a new index.")
         docs = []
