@@ -1,0 +1,26 @@
+Prompt,Expected command,Actual command,Answer
+állíts be egy 10 perces időzítőt,set_timer,set_timer,Beállítom a 10 perces időzítőt.
+készíts egy képet,take_picture,take_picture,"Rendben, készítek egy képet."
+rögzíts egy videót,record_video,record_video,"Rendben, megnyitom a kamera alkalmazást videó módban."
+keress rá az időjárásra az interneten,search_web,search_web,"Rendben, rákeresek az időjárásra az interneten."
+nyisd meg a beállításokat,settings,settings,Megnyitom a beállításokat.
+nyisd meg a wifi beállításokat,wifi_settings,wifi_settings,Megnyitom a wifi beállításokat.
+nyisd meg a vezeték nélküli beállításokat,wireless_settings,wireless_settings,Megnyitom a vezeték nélküli beállításokat.
+nyisd meg az apn beállításokat,apn_settings,apn_settings,Megnyitom az APN beállításokat.
+nyisd meg a bluetooth beállításokat,bluetooth_settings,bluetooth_settings,Megnyitom a Bluetooth beállításokat.
+nyisd meg a dátum beállításokat,date_settings,date_settings,Megnyitom a dátum beállításokat.
+nyisd meg a helyi beállításokat,locale_settings,locale_settings,Megnyitom a helyi beállításokat.
+nyisd meg a bemeneti beállításokat,input_settings,input_settings,Megnyitom a bemeneti beállításokat.
+nyisd meg a megjelenítési beállításokat,display_settings,display_settings,"Rendben, megnyitom a megjelenítési beállításokat."
+nyisd meg a biztonsági beállításokat,security_settings,security_settings,Megnyitom a biztonsági beállításokat.
+nyisd meg a helymeghatározási beállításokat,location_settings,location_settings,Megnyitom a helymeghatározási beállításokat.
+nyisd meg a belső tárolási beállításokat,internalstorage_settings,internalstorage_settings,Megnyitom a belső tárolási beállításokat.
+nyisd meg a memóriakártya beállításokat,memorycard_settings,memorycard_settings,Megnyitom a memóriakártya beállításokat.
+készíts egy jegyzetet,create_note,create_note,"Rendben, készítek egy jegyzetet."
+adj hozzá egy eseményt a naptáramhoz augusztus 5-én,add_event,add_event,Hozzáadom az eseményt a naptáradhoz augusztus 5-én.
+játszd le a Bohemian Rhapsody-t a Queen-től,play_music,play_music,"Rendben, lejátszom a Bohemian Rhapsody-t a Queen-től."
+keress rá a legújabb hírekre az interneten,search_web,search_web,"Rendben, keresek a legújabb hírekre az interneten."
+állíts be egy ébresztőt 7-re,set_alarm,set_alarm,Beállítom az ébresztőt 7 órára.
+nyisd meg a biztonsági beállításokat,security_settings,security_settings,Megnyitom a biztonsági beállításokat.
+állíts be egy 30 perces időzítőt,set_timer,set_timer,Beállítom a 30 perces időzítőt.
+nyisd meg a megjelenítési beállításokat,display_settings,display_settings,"Rendben, megnyitom a megjelenítési beállításokat."

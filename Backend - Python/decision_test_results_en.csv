@@ -1,0 +1,33 @@
+Prompt,Expected result,Actual result
+Open the settings,True,True
+What should I wear at 16 degrees?,False,False
+Turn on the lights,True,True
+What is the best toothbrush brand? Answer me!,False,False
+Increase the volume,True,True
+Restart the system,True,True
+Who is the Prime Minister of Hungary?,False,False
+Create a new file,True,True
+Stop the music,True,True
+Where can I find the best restaurant in Pécs?,False,False
+Print the document,True,True
+How much is a movie ticket?,False,False
+Close the application,True,True
+What does the word 'synonym' mean?,False,False
+Refresh the website,True,True
+Turn off the speaker,True,True
+Turn off the phone,True,True
+Increase the screen brightness,True,True
+When does the restaurant open?,False,False
+Could you call me a taxi please?,True,True
+What is the time difference between Tokyo and Budapest?,False,False
+Stop the download,True,True
+What healthy foods should I eat to boost my energy?,False,False
+How can I plan a cost-effective trip to Europe?,False,False
+What daily habits can help increase productivity?,False,False
+What is the difference between Homeric epics and the Trojan myth?,False,False
+How can I effectively manage stress at work?,False,False
+How can I make pizza at home with simple ingredients?,False,False
+What are the most beautiful sights in Italy?,False,False
+Why is regular exercise important for maintaining health?,False,False
+What books do you recommend on self-improvement?,False,False
+How can I write an effective resume?,False,False

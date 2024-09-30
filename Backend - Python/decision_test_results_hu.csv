@@ -1,0 +1,33 @@
+Prompt,Expected result,Actual result
+Nyisd meg a beállításokat,True,True
+Mit vegyek fel 16 fokban,False,False
+Kapcsold be a világítást,True,True
+Mi a legjobb fogkefe márka? Válaszolj nekem!,False,False
+Növeld a hangerőt,True,True
+Indítsd újra a rendszert,True,True
+Ki Magyarország miniszterelnöke,False,False
+Hozz létre új fájlt,True,True
+Állítsd le a zenét,True,True
+Hol találom a legjobb éttermet Pécsen?,False,False
+Nyomtasd ki a dokumentumot,True,True
+Mennyi a jegy ára a moziba,False,False
+Zárd be az alkalmazást,True,True
+Mit jelent a 'szinonima' szó,False,False
+Frissítsd a weboldalt,True,True
+Kapcsold ki a hangszórót,True,True
+Kapcsold ki a telefont,True,True
+Növeld a képernyő fényerejét,True,True
+Mikor nyit az étterem,False,False
+"Hívnál nekem egy taxit, kérlek?",True,True
+Hány óra időeltolódás van Tokió és Budapest között,False,False
+Állítsd le a letöltést,True,True
+"Milyen egészséges ételeket érdemes fogyasztani, ha növelni szeretném az energiámat?",False,False
+Hogyan tervezhetek meg egy költséghatékony európai utazást?,False,False
+Milyen napi szokások segíthetnek a produktivitás növelésében?,False,False
+Mi a különbség a homéroszi eposzok és a trójai mondakör között?,False,False
+Hogyan kezelhetem hatékonyan a stresszt a munkahelyen?,False,False
+Hogyan készíthetek otthon pizzát egyszerű hozzávalókból?,False,False
+Melyek a legszebb látnivalók Olaszországban?,False,False
+Miért fontos a rendszeres testmozgás az egészség megőrzésében?,False,False
+Milyen könyveket ajánlasz önfejlesztés témában?,False,False
+Hogyan írhatok hatékony önéletrajzot?,False,False
