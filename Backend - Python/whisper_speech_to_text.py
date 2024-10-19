@@ -1,6 +1,8 @@
 import os
 from openai import OpenAI
 
+from speech_to_text import SpeechToText
+
 class WhisperSpeechToText(SpeechToText):
     client = OpenAI()
 
@@ -38,9 +40,11 @@ class WhisperSpeechToText(SpeechToText):
                 transcription = cls.client.audio.transcriptions.create(
                     model="whisper-1",
                     file=file,
-                    response_format="text"
+                    response_format="text",
+                    prompt = helpwords,
+                    language = lang
                 )
-            return transcription.text
+            return transcription
 
         except Exception as e:
             raise Exception(e)
