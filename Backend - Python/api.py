@@ -16,7 +16,23 @@ import os
 CACHE_ENABLED = True
     
 app = Flask(__name__)
-swagger = Swagger(app)
+swagger = Swagger(app, template={
+    "info": {
+        "title": "Personal Assistant API",
+        "description": "API documentation for a Personal Assistant powered by state-of-the-art AI solutions",
+        "version": "1.0.0",
+        "contact": {
+            "name": "Csaba Szelle",
+            "email": "sz.csaba.2002@gmail.com"
+        },
+    },
+    "tags": [
+        {
+            "name": "Assistant",
+            "description": "General operations related to the personal assistant."
+        },
+    ]
+})
 log_dir = os.path.join(os.path.expanduser("~"), "RestAPI_logs")
 os.makedirs(log_dir, exist_ok=True)
 
@@ -82,6 +98,8 @@ async def health_check():
     """
     Health check endpoint
     ---
+    tags:
+      - Assistant
     responses:
         200:
             description: OK - the Rest API is running
@@ -97,6 +115,8 @@ async def interpret_text():
     """
     Interprets a user prompt from a text
     ---
+    tags:
+      - Assistant
     parameters:
       - in: body
         name: body
@@ -156,6 +176,8 @@ async def interpret_voice():
     """
     Interprets a user prompt from an audio file
     ---
+    tags:
+      - Assistant
     parameters:
         - in: formData
           name: audio
