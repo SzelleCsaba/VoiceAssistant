@@ -12,9 +12,6 @@ import whisper_speech_to_text
 
 import os
 
-# TODO: Install the flasgger package
-# !pip install flasgger
-
 # set it in case you want a Cache
 CACHE_ENABLED = True
     
@@ -87,7 +84,10 @@ async def health_check():
     ---
     responses:
         200:
-            description: OK
+            description: OK - the Rest API is running
+            schema:
+                type: string
+                example: "OK"
     """
     return "OK", 200
 
@@ -98,30 +98,48 @@ async def interpret_text():
     Interprets a user prompt from a text
     ---
     parameters:
-      - name: text
-        in: body
+      - in: body
+        name: body
         required: true
         schema:
           type: object
           properties:
             text:
               type: string
-              example: "What is the weather like today?"
+          example:
+            text: "Set an alarm for 16:00"
 
     responses:
-        200:
-            description: The result for the prompt
-            schema:
-                type: object
-                properties:
-                    type:
+      200:
+        description: The result for the prompt
+        schema:
+              type: array
+              items:
+                oneOf:
+                  - type: object
+                    properties:
+                      args:
+                        type: object
+                        properties:
+                          time:
+                            type: string
+                            example: "16:00"
+                      id:
                         type: string
-                        example: "simple_answer"
-                    answer:
+                        example: "call_hgsfhdgx"
+                      name:
                         type: string
-                        example: "The weather is sunny today."
-        400:
-            description: No text provided
+                        example: "set_alarm"
+                      type:
+                        type: string
+                        example: "tool_call"
+                  - type: string
+                    example: "Sure, I will set an alarm for 16:00."
+      400:
+        description: Bad Request - No text provided
+        schema:
+            type: string
+            example: "No text provided"
     """
 
     if 'text' not in request.json:
@@ -139,31 +157,50 @@ async def interpret_voice():
     Interprets a user prompt from an audio file
     ---
     parameters:
-        - name: audio
-            in: formData
-            type: file
-            required: true
-            description: The audio file to interpret
-        - name: lang
-            in: formData
-            type: string
-            required: false
-            description: The language of the audio file (default: en)
+        - in: formData
+          name: audio
+          type: file
+          required: true
+          description: The audio file to interpret
+        - in: formData
+          name: lang
+          type: string
+          required: false
+          description: The language of the audio file (default is en)
+
     responses:
-        200:
-            description: The result for the prompt
-            schema:
-                type: object
-                properties:
-                    type:
+      200:
+        description: The result for the prompt
+        schema:
+              type: array
+              items:
+                oneOf:
+                  - type: object
+                    properties:
+                      args:
+                        type: object
+                        properties:
+                          time:
+                            type: string
+                            example: "16:00"
+                      id:
                         type: string
-                        example: "simple_answer"
-                    answer:
+                        example: "call_hgsfhdgx"
+                      name:
                         type: string
-                        example: "The weather is sunny today."
-        400:
-            description: No audio file provided
+                        example: "set_alarm"
+                      type:
+                        type: string
+                        example: "tool_call"
+                  - type: string
+                    example: "Sure, I will set an alarm for 16:00."
+      400:
+        description: Bad Request - No audio file provided
+        schema:
+            type: string
+            example: "No text provided"
     """
+
     if 'audio' not in request.files:
         return "No audio file provided", 400
 
