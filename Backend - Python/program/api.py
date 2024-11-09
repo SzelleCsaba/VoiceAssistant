@@ -1,5 +1,5 @@
-import os
 import logging
+import sys
 
 from flask import Flask, request, jsonify
 from flasgger import Swagger
@@ -10,7 +10,6 @@ import answer_agent
 import cache
 import whisper_speech_to_text
 
-import os
 
 # set it in case you want a Cache
 CACHE_ENABLED = True
@@ -33,15 +32,13 @@ swagger = Swagger(app, template={
         },
     ]
 })
-log_dir = os.path.join(os.path.expanduser("~"), "RestAPI_logs")
-os.makedirs(log_dir, exist_ok=True)
 
 logger = logging.getLogger('werkzeug')
 logging.basicConfig(
-                filename=os.path.join(log_dir, "RestAPI.log"),
-                format="%(message)s",
-                filemode="a",
-                encoding="UTF-8")
+    stream=sys.stdout,
+    format="%(message)s",
+    level=logging.INFO,
+)
 
 
 cr = command_resolver.CommandResolver()

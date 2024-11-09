@@ -1,0 +1,2 @@
+docker build -t voice-assistant-final .
+docker run --env-file .env -p 8080:8080 voice-assistant-final

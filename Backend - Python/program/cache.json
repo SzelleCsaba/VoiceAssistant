@@ -1,0 +1,24 @@
+{
+    "állíts be egy ébresztőt 16 órára": [
+        {
+            "name": "set_alarm",
+            "args": {
+                "time": "16:00"
+            },
+            "id": "call_FH77lNOerobB3ZDwkoftcTl9",
+            "type": "tool_call"
+        },
+        "Beállítom az ébresztőt 16 órára."
+    ],
+    "Set an alarm for 16:00": [
+        {
+            "name": "set_alarm",
+            "args": {
+                "time": "16:00"
+            },
+            "id": "call_phHglbnLm5U43gsz1GpUsXbX",
+            "type": "tool_call"
+        },
+        "Sure, I will set an alarm for 16:00."
+    ]
+}
